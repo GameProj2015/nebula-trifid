@@ -42,7 +42,7 @@ LIST(APPEND ALLSRCS ${SRCS} ${PCH_files} ${projectwizard_HEADERS_MOC} ${projectw
 #STRING(REPLACE "/MTd" "/MDd" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
 #STRING(REPLACE "/MT" "/MD" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
 REMOVE_DEFINITIONS(-DQT_DEBUG)
-STRING(REPLACE "/MANIFEST:NO" "" CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+#STRING(REPLACE "/MANIFEST:NO" "" CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
 
 ADD_EXECUTABLE(projectwizard ${ALLSRCS})
 
@@ -55,20 +55,15 @@ N_SET_EXE_SUBSYSTEM(projectwizard Windows)
 
 ADD_DEPENDENCIES(projectwizard
 	foundation
-	qttoolkitutil
-	base64
-	toolkitutil	
-	
+	qttools	
+	toolkitutil		
 )
 
 TARGET_LINK_LIBRARIES(projectwizard 
 	foundation
-	qttoolkitutil
-	toolkitutil
-	base64
-	StackWalker
-	${QT_WIN_LIBS}
-	${N_LIBS}
+	qttools
+	toolkitutil		
+	${QT_WIN_LIBS}	
 	${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY}
 )
 

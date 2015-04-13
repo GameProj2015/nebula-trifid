@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
-//  bdapplication.cc
+//  debugdrawer.cc
 //  (C) 2009 Radon Labs GmbH
-//  (C) 2013 Individual contributors, see AUTHORS file
+//  (C) 2013-2015 Individual contributors, see AUTHORS file
 //------------------------------------------------------------------------------
 
 #include "stdneb.h"
@@ -14,7 +14,10 @@
 #include "coregraphics/textrenderer.h"
 #include "debugrender/debugrender.h"
 #include "conversion.h"
+#include "bulletscene.h"
 
+namespace Bullet
+{
 using namespace Math;
 using namespace Debug;
 using namespace CoreGraphics;
@@ -48,6 +51,7 @@ DebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3&
 {
 	/// what was the point of using boxes?
 	/// ok it is much faster
+#define _NOT_USE_BOX_DRAWING
 #ifndef _NOT_USE_BOX_DRAWING
     // we use a box as a line
     n_assert(color.x() >= 0.0f);
@@ -85,10 +89,8 @@ DebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3&
     matrix44 m = scale * rot * matrix44::translation(center);
     DebugShapeRenderer::Instance()->DrawBox(m, float4(color.x(), color.y(), color.z(), 1.0f));
 #else
-	static float4 arr[2];
-	arr[0] = Bt2NebVector(from);
-	arr[1] = Bt2NebVector(to);	
-	DebugShapeRenderer::Instance()->DrawPrimitives(matrix44::identity(),CoreGraphics::PrimitiveTopology::LineList,1,arr,4,float4(color.x(), color.y(), color.z(), 1.0f),CoreGraphics::RenderShape::CheckDepth);
+	this->scene->debugPrimitives.Append(Bt2NebVector(from));
+	this->scene->debugPrimitives.Append(Bt2NebVector(to));
 #endif
 }
 
@@ -155,11 +157,13 @@ DebugDrawer::drawBox(const btVector3& bbMin, const btVector3& bbMax, const btVec
 */
 void	
 DebugDrawer::drawBox(const btVector3& bbMin, const btVector3& bbMax, const btTransform& trans, const btVector3& color)
-{
-	btVector3 halfExtents = (bbMax-bbMin)* 0.5f;
-	btVector3 center = (bbMax+bbMin) *0.5f;
-	point bcenter(center.x(),center.y(),center.z());
-	bbox box(bcenter,Bt2NebVector(halfExtents));
-	box.transform(Bt2NebTransform(trans));
-	DebugShapeRenderer::Instance()->DrawBox(box.to_matrix44(), float4(color.x(),color.y(),color.z(),1),CoreGraphics::RenderShape::Wireframe);
+{	
+	bbox box;
+	box.pmin = Bt2NebVector(bbMin);
+	box.pmax = Bt2NebVector(bbMax);
+	matrix44 boxShape = box.to_matrix44();
+	boxShape = matrix44::multiply(boxShape, Bt2NebTransform(trans));
+	DebugShapeRenderer::Instance()->DrawBox(boxShape, float4(color.x(),color.y(),color.z(),1),CoreGraphics::RenderShape::Wireframe);
 }
+
+} // namespace Bullet

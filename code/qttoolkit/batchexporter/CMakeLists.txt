@@ -42,7 +42,7 @@ LIST(APPEND ALLSRCS ${SRCS} ${PCH_files} ${batchexporter_HEADERS_MOC} ${batchexp
 #STRING(REPLACE "/MTd" "/MDd" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
 #STRING(REPLACE "/MT" "/MD" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
 REMOVE_DEFINITIONS(-DQT_DEBUG)
-STRING(REPLACE "/MANIFEST:NO" "" CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+#STRING(REPLACE "/MANIFEST:NO" "" CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
 
 ADD_EXECUTABLE(batchexporter ${ALLSRCS})
 
@@ -55,22 +55,15 @@ N_SET_EXE_SUBSYSTEM(batchexporter Windows)
 
 ADD_DEPENDENCIES(batchexporter
 	foundation
-	toolkitutil
-	base64
-	qttoolkitutil
+	toolkitutil	
+	qttools
 )
 
 TARGET_LINK_LIBRARIES(batchexporter 
-        toolkitutil
-	foundation
-	tinyxml
-	zlib
-	base64
-	StackWalker
-	qttoolkitutil
+    toolkitutil
+	foundation		
 	qttools
-	${QT_WIN_LIBS}
-	${N_LIBS}
+	${QT_WIN_LIBS}	
 	${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY}
 )
 

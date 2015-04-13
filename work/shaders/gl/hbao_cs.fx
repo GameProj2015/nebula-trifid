@@ -8,8 +8,8 @@
 #include "lib/techniques.fxh"
 
 vec2 UVToViewA = vec2(0.0f, 0.0f);
-vec2 AOResolution = vec2(0.0f, 0.0f);
 vec2 UVToViewB = vec2(0.0f, 0.0f);
+vec2 AOResolution = vec2(0.0f, 0.0f);
 vec2 InvAOResolution = vec2(0.0f, 0.0f);
 float TanAngleBias = 0.0f;
 float Strength = 0.0f;
@@ -27,8 +27,7 @@ float R2 = 0.0f;
 
 sampler2D DepthBuffer;
 sampler2D RandomMap;
-sampler2D FirstPassAO;
-readwrite r16f image2D HBAO0;
+readwrite rg16f image2D HBAO0;
 write rg16f image2D HBAO1;
 
 samplerstate DepthSampler
@@ -94,8 +93,8 @@ vec2 SharedMemoryLoad(uint centerId, uint x)
 //----------------------------------------------------------------------------------
 vec2 LoadXZFromTexture(uint x, uint y)
 { 
-    vec2 uv = (vec2(x, y) + vec2(0.5f)) * InvAOResolution;
-    float z_eye = textureLod(DepthBuffer, uv, 0).r;
+    vec2 uv = (vec2(x, y)) * InvAOResolution;
+    float z_eye = texelFetch(DepthBuffer, ivec2(x, y), 0).r;
     float x_eye = (UVToViewA.x * uv.x + UVToViewB.x) * z_eye;
     return vec2(x_eye, z_eye);
 }
@@ -105,8 +104,8 @@ vec2 LoadXZFromTexture(uint x, uint y)
 //----------------------------------------------------------------------------------
 vec2 LoadYZFromTexture(uint x, uint y)
 {
-    vec2 uv = (vec2(x, y) + vec2(0.5f)) * InvAOResolution;
-    float z_eye = textureLod(DepthBuffer, uv, 0).r;
+    vec2 uv = (vec2(x, y)) * InvAOResolution;
+    float z_eye = texelFetch(DepthBuffer, ivec2(x, y), 0).r;
     float y_eye = (UVToViewA.y * uv.y + UVToViewB.y) * z_eye;
     return vec2(y_eye, z_eye);
 }
