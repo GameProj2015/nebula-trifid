@@ -1,9 +1,13 @@
 #pragma once
+//------------------------------------------------------------------------------
+/**
+	@class Bullet::BulletScene
 
+	(C) 2012-2015 Individual contributors, see AUTHORS file
+*/
 #include "physics/base/basescene.h"
 #include "physics/physicsobject.h"
 
-class DebugDrawer;
 class btDynamicsWorld;
 class btDefaultCollisionConfiguration;
 class btBroadphaseInterface;
@@ -12,9 +16,11 @@ class btCollisionDispatcher;
 class btDiscreteDynamicsWorld;
 class btCollisionObject;
 
+
 namespace Bullet
 {
 
+class DebugDrawer;
 class BulletScene : public Physics::BaseScene
 {
 
@@ -38,6 +44,7 @@ public:
 	/// get gravity vector
 	const Math::vector& GetGravity() const;
 
+	/// perform debug rendering
 	virtual void RenderDebug();
 	
 	const Ptr<Physics::PhysicsObject> & SimpleRayCheck(const Math::vector & start, const Math::vector & end, uint objectTypes = Physics::All);
@@ -59,6 +66,7 @@ private:
 	friend class BulletPhysicsServer;
 	friend class BulletJoint;
 	friend class BulletCharacter;
+	friend class DebugDrawer;
 
 	struct _physics
 	{
@@ -74,13 +82,18 @@ private:
 	} physics;
 
 	Timing::Time lastUpdate;
-	DebugDrawer *debugDrawer;
+	DebugDrawer* debugDrawer;
+	Util::Array<Math::float4> debugPrimitives;
+
 
 	btDynamicsWorld * GetWorld();
 	int GetEntitiesInShape(btCollisionObject * shape, const Physics::FilterSet& excludeSet, Util::Array<Ptr<Physics::PhysicsObject> >& result );
 	
 };
 
+//------------------------------------------------------------------------------
+/**
+*/
 inline btDynamicsWorld * 
 BulletScene::GetWorld()
 {
@@ -88,4 +101,4 @@ BulletScene::GetWorld()
 }
 
 
-}
+} // namespace Bullet

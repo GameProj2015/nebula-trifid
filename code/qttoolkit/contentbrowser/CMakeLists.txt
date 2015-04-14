@@ -151,7 +151,7 @@ LIST(APPEND ALLSRCS ${CODE} ${PCH_files} ${contentbrowser_HEADERS_MOC} ${content
 #STRING(REPLACE "/MTd" "/MDd" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
 #STRING(REPLACE "/MT" "/MD" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
 REMOVE_DEFINITIONS(-DQT_DEBUG)
-STRING(REPLACE "/MANIFEST:NO" "" CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+#STRING(REPLACE "/MANIFEST:NO" "" CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
 
 ADD_EXECUTABLE(contentbrowser ${ALLSRCS})
 
@@ -164,8 +164,7 @@ ENDIF()
 N_SET_EXE_SUBSYSTEM(contentbrowser Windows)
 		
 
-ADD_DEPENDENCIES(contentbrowser
-	${NEBULA_DEFAULT_LIBS}
+ADD_DEPENDENCIES(contentbrowser	
 	libqimg
 	posteffectcontroller
 	splash
@@ -173,14 +172,12 @@ ADD_DEPENDENCIES(contentbrowser
 	shady
 	resourcebrowser
 	toolkitutil
-	remoteinterface
-	remoteinterface_NIDLS
-	qttoolkitutil
+	remoteinterface	
+	qttools
 	editorfeatures
 )
 
-TARGET_LINK_LIBRARIES(contentbrowser 
-	
+TARGET_LINK_LIBRARIES(contentbrowser 	
 	qtfeature
 	posteffectcontroller
 	libqimg
@@ -190,14 +187,9 @@ TARGET_LINK_LIBRARIES(contentbrowser
 	resourcebrowser
 	miniexporter
 	remoteinterface
-	remoteinterface_NIDLS
-	qttoolkitutil
+	qttools
 	editorfeatures
-	toolkitutil
-	${NEBULA_DEFAULT_LIBS}
-	${NEBULA_TOOLKIT_LIBS}
-	${N_FBX_LIBS}
-	${QT_WIN_LIBS}
-	${N_LIBS}
+	toolkitutil	
+	${QT_WIN_LIBS}	
 	${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY}	
 )
