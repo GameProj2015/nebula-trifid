@@ -25,12 +25,11 @@ float R2 = 0.0f;
 #define NUM_STEPS 8
 #endif
 
-read r32f image2D DepthBuffer;
+sampler2D DepthBuffer;
 //sampler2D RandomMap;
 readwrite rg16f image2D HBAO0;
 write rg16f image2D HBAO1;
 
-/*
 samplerstate DepthSampler
 {
 	Samplers = { DepthBuffer };
@@ -38,7 +37,6 @@ samplerstate DepthSampler
 	AddressU = Clamp;
 	AddressV = Clamp;
 };
-*/
 
 // Maximum kernel radius in number of pixels
 #define KERNEL_RADIUS (NUM_STEPS*STEP_SIZE)
@@ -95,8 +93,8 @@ vec2 SharedMemoryLoad(int centerId, int x)
 //----------------------------------------------------------------------------------
 vec2 LoadXZFromTexture(int x, int y)
 { 
-    vec2 uv = (vec2(x, y)) * InvAOResolution;
-    float z_eye = imageLoad(DepthBuffer, ivec2(x, y)).r;
+    vec2 uv = (vec2(x, y) + 0.5f) * InvAOResolution;
+    float z_eye = textureLod(DepthBuffer, uv, 0).r;
     float x_eye = (UVToViewA.x * uv.x + UVToViewB.x) * z_eye;
     return vec2(x_eye, z_eye);
 }
@@ -106,8 +104,8 @@ vec2 LoadXZFromTexture(int x, int y)
 //----------------------------------------------------------------------------------
 vec2 LoadYZFromTexture(int x, int y)
 {
-    vec2 uv = (vec2(x, y)) * InvAOResolution;
-    float z_eye = imageLoad(DepthBuffer, ivec2(x, y)).r;
+    vec2 uv = (vec2(x, y) + 0.5f) * InvAOResolution;
+    float z_eye = textureLod(DepthBuffer, uv, 0).r;
     float y_eye = (UVToViewA.y * uv.y + UVToViewB.y) * z_eye;
     return vec2(y_eye, z_eye);
 }
@@ -181,7 +179,7 @@ csMainX()
     // Load float2 samples into shared memory
     SharedMemory[gl_LocalInvocationID.x] = LoadXZFromTexture(x,y);
     SharedMemory[min(2 * KERNEL_RADIUS + gl_LocalInvocationID.x, SHARED_MEM_SIZE - 1)] = LoadXZFromTexture(2 * KERNEL_RADIUS + x, y);
-    memoryBarrierShared();
+    groupMemoryBarrier();
 
     const int writePos = tileStart + int(gl_LocalInvocationID.x);
     const int tileEndClamped = min(tileEnd, int(AOResolution.x));
@@ -224,7 +222,7 @@ csMainY()
     // Load float2 samples into shared memory
     SharedMemory[gl_LocalInvocationID.x] = LoadYZFromTexture(x,y);
     SharedMemory[min(2 * KERNEL_RADIUS + gl_LocalInvocationID.x, SHARED_MEM_SIZE - 1)] = LoadYZFromTexture(x, 2 * KERNEL_RADIUS + y);
-    memoryBarrierShared();
+    groupMemoryBarrier();
 
     const uint writePos = tileStart + gl_LocalInvocationID.x;
     const uint tileEndClamped = min(tileEnd, int(AOResolution.x));
