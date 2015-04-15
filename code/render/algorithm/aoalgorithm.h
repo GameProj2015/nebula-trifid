@@ -70,16 +70,16 @@ private:
 #ifdef HBAO_COMPUTE
 	Ptr<CoreGraphics::ShaderVariable> hbao0Var;
 	Ptr<CoreGraphics::ShaderVariable> hbao1Var;
-	Ptr<CoreGraphics::ShaderVariable> hbaoBlur0Var;
-	Ptr<CoreGraphics::ShaderVariable> hbaoBlur1Var;
-	Ptr<CoreGraphics::ShaderVariable> hbaoBlur2Var;
+	Ptr<CoreGraphics::ShaderVariable> hbaoBlurLinearVar;
+	Ptr<CoreGraphics::ShaderVariable> hbaoBlurPointVar;
+	Ptr<CoreGraphics::ShaderVariable> hbaoBlurRGVar;
+	Ptr<CoreGraphics::ShaderVariable> hbaoBlurRVar;
 #else
 	Ptr<CoreGraphics::ShaderVariable> hbaoTextureVar;
     Ptr<CoreGraphics::ShaderVariable> hbaoBlurredTextureVar;
     Ptr<CoreGraphics::ShaderVariable> hbaoFinalTextureVar;
 	Ptr<CoreGraphics::ShaderVariable> randomTextureVar;
 	Ptr<CoreGraphics::Texture> randomTexture;
-	Ptr<CoreGraphics::ShaderVariable> rVar;
 	Ptr<CoreGraphics::ShaderVariable> focalLengthVar;
 	Ptr<CoreGraphics::ShaderVariable> maxRadiusPixelsVar;
 	Ptr<CoreGraphics::ShaderVariable> negInvR2Var;
@@ -96,6 +96,7 @@ private:
 	Ptr<CoreGraphics::ShaderVariable> uvToViewAVar;
 	Ptr<CoreGraphics::ShaderVariable> uvToViewBVar;
 	Ptr<CoreGraphics::ShaderVariable> r2Var;
+	Ptr<CoreGraphics::ShaderVariable> rVar;
 	Ptr<CoreGraphics::ShaderVariable> aoResolutionVar;
 	Ptr<CoreGraphics::ShaderVariable> invAOResolutionVar;
 	Ptr<CoreGraphics::ShaderVariable> strengthVar;
