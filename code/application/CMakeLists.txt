@@ -246,6 +246,35 @@ set(application_graphicsfeature
 	${application_graphicsfeature__properties}
 	${application_files_graphicsfeature}
 )
+
+
+
+
+
+set(application_files_corefeature__properties
+	corefeature/properties/fpscameraproperty.cc
+	corefeature/properties/fpscameraproperty.h
+)
+source_group("corefeature\\properties" FILES ${application_files_corefeature__properties})
+
+set(application_corefeature__properties
+	${application_files_corefeature__properties}
+)
+
+set(application_files_corefeature
+	
+)
+source_group("corefeature" FILES ${application_files_corefeature})
+
+set(application_corefeature      
+	${application_corefeature__properties}
+	${application_files_corefeature}
+)
+
+
+
+
+
 set(application_files_physicsfeature__properties
 	physicsfeature/properties/actorphysicsproperty.cc
 	physicsfeature/properties/actorphysicsproperty.h
@@ -483,6 +512,7 @@ set(P_NIDL_FILES
 	scriptingfeature/scriptingcommands.nidl
 	scriptingfeature/scriptingprotocol.nidl
 	scriptfeature/scriptattr/scriptattributes.nidl
+	corefeature/coreattr/coreattributes.nidl
 )
 
 N_WRAP_NIDL_FILES(application_NIDLS ${P_NIDL_FILES})
@@ -498,6 +528,7 @@ set(application_SRCS
 	${application_scriptfeature}
 	${application_stateobjectfeature}
 	${application_precompiled_src}
+	${application_corefeature}
 )
 
 add_library( application STATIC ${application_SRCS} )

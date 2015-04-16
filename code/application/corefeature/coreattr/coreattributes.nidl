@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Nebula3>
+  <Property name="FPSCameraFeature::FPSCameraProperty" header="corefeature/properties/fpscameraproperty.h">
+  </Property>
+</Nebula3>		
