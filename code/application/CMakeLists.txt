@@ -520,6 +520,7 @@ set(P_NIDL_FILES
 	scriptingfeature/scriptingprotocol.nidl
 	scriptfeature/scriptattr/scriptattributes.nidl
 	corefeature/coreattr/coreattributes.nidl
+	corefeature/coreattr/coreproperties.nidl
 )
 
 N_WRAP_NIDL_FILES(application_NIDLS ${P_NIDL_FILES})
