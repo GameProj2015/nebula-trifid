@@ -18,5 +18,6 @@
 #include "graphicsfeature/properties/actorgraphicsproperty.h"
 #include "graphicsfeature/properties/ambiencebubbleproperty.h"
 #include "graphicsfeature/properties/animationcontrolproperty.h"
+#include "corefeature/properties/fpscameraproperty.h"
 
 //------------------------------------------------------------------------------

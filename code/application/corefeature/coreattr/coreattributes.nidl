@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Nebula3>
+  <AttributeLib>
+	  <Attribute name="CharacterId" fourcc="CTNE" accessMode="ReadWrite" type="String"/>
+	  <Attribute name="HeadJoint" fourcc="CTHJ" accessMode="ReadWrite" type="String"/>
+	  <Attribute name="HipJoint" fourcc="CTJH" accessMode="ReadWrite" type="String"/>
+	  <Attribute name="Fov" fourcc="CTFV" accessMode="ReadWrite" type="Float"/>
+	  <Attribute name="ClosePlane" fourcc="CTCP" accessMode="ReadWrite" type="Float"/>
+	  <Attribute name="FarPlane" fourcc="CTFP" accessMode="ReadWrite" type="Float"/>
+	  <Attribute name="Sensitivity" fourcc="CTST" accessMode="ReadWrite" type="Float"/>
+  </AttributeLib>
+</Nebula3>		

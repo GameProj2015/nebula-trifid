@@ -64,6 +64,8 @@
 			<File name="code/application/basegamefeature/basegameattr/basegameattributes.nidl"/>
 			<File name="code/application/basegamefeature/properties/basegameproperties.nidl"/>
 			<File name="code/application/graphicsfeature/graphicsattr/graphicsattributes.nidl"/>
+			<File name="code/application/corefeature/coreattr/coreattributes.nidl"/>
+			<File name="code/application/corefeature/coreattr/coreproperties.nidl"/>
 			<File name="code/application/physicsfeature/physicsattr/physicsattributes.nidl"/>
 			<File name="code/application/scriptfeature/scriptattr/scriptattributes.nidl"/>
 			<File name="code/addons/navigation/navigationattributes.nidl"/>

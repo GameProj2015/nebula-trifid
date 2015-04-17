@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Nebula3>
+  <AttributeLib>
+    <Dependency header="corefeature/coreattr/coreattributes.h" />
+  </AttributeLib>
+
+  <Property name="FPSCameraFeature::FPSCameraProperty" derivedFrom="GraphicsFeature::CameraProperty" header="corefeature/properties/fpscameraproperty.h">
+	<Attribute name="CharacterId"/>
+	<Attribute name="HeadJoint"/>
+	<Attribute name="HipJoint"/>
+	<Attribute name="Fov"/>
+	<Attribute name="ClosePlane"/>
+	<Attribute name="FarPlane"/>
+	<Attribute name="Sensitivity"/>
+  </Property>
+</Nebula3>		
