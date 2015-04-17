@@ -12,6 +12,7 @@
 	  <Attribute name="VelocityGain" fourcc="VELG" accessMode="ReadWrite" type="Float" default="0.95f" /> <!-- Currently only used in Havok -->
     <Attribute name="AirVelocityGain" fourcc="AVEL" accessMode="ReadWrite" type="Float" default="0.05f" /> <!-- Currently only used in Havok -->
 	  <Attribute name="MaxVelocity" fourcc="MVEL" accessMode="ReadWrite" type="Float" default="10.0f" />
+	  <Attribute name="AngularSmoothing" fourcc="PPAS" accessMode="ReadWrite" type="Bool" default="false" />
 	
 	  <Attribute name="Following" fourcc="FOLL" accessMode="ReadWrite" type="Bool" system="1"/>	
 	  <Attribute name="Moving" fourcc="MOVG" accessMode="ReadWrite" type="Bool" system="1"/>	
@@ -80,6 +81,7 @@
     <Attribute name="CapsuleHeight"/>
     <Attribute name="CrouchingCapsuleHeight"/>    
     <Attribute name="CharacterShape"/>
+    <Attribute name="AngularSmoothing"/>
   </Property>
   <Property name="PhysicsFeature::MouseGripperProperty" derivedFrom="GraphicsFeature::InputProperty" header="physicsfeature/properties/mousegripperproperty.h" />      
 </Nebula3>		
