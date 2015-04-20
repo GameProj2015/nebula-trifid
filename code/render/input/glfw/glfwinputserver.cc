@@ -91,6 +91,9 @@ GLFWInputServer::OnFrame()
 {
     //this->eventHandler->HandlePendingEvents();    
     InputServerBase::OnFrame();
+
+	
+	//glfwSetCursorPos(GLFWDisplayDevice::Instance()->window, 500/2, 500/2);
 }
 
 //------------------------------------------------------------------------------
@@ -111,5 +114,16 @@ GLFWInputServer::SetCursorVisible( bool enable )
 
 }
 
+void GLFWInputServer::SetCursorLocked( bool enable)
+{
+	if(enable)
+	{
+		glfwSetInputMode(GLFWDisplayDevice::Instance()->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
+	else
+	{
+		glfwSetInputMode(GLFWDisplayDevice::Instance()->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+}
 
 } // namespace Win32
