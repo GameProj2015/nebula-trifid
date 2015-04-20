@@ -9,6 +9,7 @@
 	<Attribute name="Fov"/>
 	<Attribute name="ClosePlane"/>
 	<Attribute name="FarPlane"/>
+  <Attribute name="YLimit"/>
 	<Attribute name="Sensitivity"/>
   </Property>
 </Nebula3>		
