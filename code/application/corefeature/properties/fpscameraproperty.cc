@@ -90,10 +90,10 @@ FPSCameraProperty::OnStart()
 		FocusManager::Instance()->SetCameraFocusEntity(this->entity);
 	}
 	head = this->entity->GetString(Attr::HeadJoint);
-	fov = this->entity->GetFloat(Attr::Fov);
+	fov = this->entity->GetFloat(Attr::Fov); 
 	closeplane = this->entity->GetFloat(Attr::ClosePlane);
 	farplane = this->entity->GetFloat(Attr::FarPlane);
-	sensitivity = this->entity->GetFloat(Attr::Sensitivity);
+	sensitivity = this->entity->GetFloat(Attr::Sensitivity) / 1000; //Because who says 0.003 sensetivity? You say 3.0, hence we devide by 1000 to make it look "nicer"
 	ylimit = n_deg2rad(this->entity->GetFloat(Attr::YLimit) - 0.01f); //Ugly haxxor, ask Nyman and he'll explain :P
 
 	Ptr<GraphicsFeature::GetModelEntity> msg = GraphicsFeature::GetModelEntity::Create();
