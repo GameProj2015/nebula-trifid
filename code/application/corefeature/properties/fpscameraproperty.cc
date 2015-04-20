@@ -96,23 +96,17 @@ FPSCameraProperty::OnStart()
 	closeplane = this->entity->GetFloat(Attr::ClosePlane);
 	farplane = this->entity->GetFloat(Attr::FarPlane);
 	sensitivity = this->entity->GetFloat(Attr::Sensitivity);
-	//Debug code
-	//Util::String entName = this->entity->GetString(Attr::CharacterId);
-	//Attr::Attribute attr = Attr::Attribute(Attr::Id, entName);
-	//ent = BaseGameFeature::EntityManager::Instance()->GetEntityByAttr(attr);
-	//n_assert(ent!=NULL && ent.isvalid());
-	//End Debug	
 
 	Ptr<GraphicsFeature::GetModelEntity> msg = GraphicsFeature::GetModelEntity::Create();
 	__SendSync(this->entity, msg);
 	modelEntity = msg->GetEntity();
-	/*headIndex = modelEntity->GetCharacter()->Skeleton().GetJointIndexByName(head);
-	hipIndex = modelEntity->GetCharacter()->Skeleton().GetJointIndexByName(hip);*/
 
-		
-
-	//Translate camera to joint pos
-		
+	//Hide this model
+	//TODO: SPANK GUGGE TO FIX THIS!
+	Ptr<GraphicsFeature::SetSkinVisible> msg_hide = GraphicsFeature::SetSkinVisible::Create();
+	msg_hide->SetVisible(false);
+	msg_hide->SetSkin("dummyChar");
+	__SendSync(this->entity, msg_hide);
 }
 
 //------------------------------------------------------------------------------
@@ -286,31 +280,45 @@ void FPSCameraProperty::OnBeginFrame()
 		{
 		headIndex = modelEntity->GetCharacter()->Skeleton().GetJointIndexByName(head);
 		Math::vector headPos = GetJointPos(headIndex);
-		Ptr<SetTransform> msg = SetTransform::Create();
-		Math::matrix44 trans = this->cameraEntity->GetTransform();
-		Math::float4 pos = this->entity->GetMatrix44(Attr::Transform).get_position();
-		trans.set_position(0); //
-		this->sensitivity = 0.003f;
-		if (mouseMovement.x() != 0 || mouseMovement.y() != 0)
-		{
-			//Math::float4 dir = trans.get_zaxis();
-			//Math::float2 normalizedMouseMovement = Math::float2::normalize(mouseMovement);
-			////Math::float4 upAxis = trans.get_yaxis();
-			////Math::float4 sideAxis = trans.get_xaxis();
-			rotx += mouseMovement.y()*sensitivity;
-			roty += mouseMovement.x()*sensitivity;
-			trans = matrix44::multiply(Math::matrix44::rotationx(rotx), Math::matrix44::rotationy(roty));
-		}
-		trans.set_position(pos);
-		msg->SetMatrix(trans);
-		this->entity->SendSync(msg.cast<Messaging::Message>());
-		trans.set_position(pos + headPos);
-		this->cameraEntity->SetTransform(trans);
+		#if(__USE_HAVOK__)	
+			Ptr<SetTransform> msg = SetTransform::Create();
+			Math::matrix44 trans = this->cameraEntity->GetTransform();
+			Math::float4 pos = this->entity->GetMatrix44(Attr::Transform).get_position();
+			trans.set_position(0); //
+			this->sensitivity = 0.003f;
+			if (mouseMovement.x() != 0 || mouseMovement.y() != 0)
+			{
+				rotx += mouseMovement.y()*sensitivity;
+				roty += mouseMovement.x()*sensitivity;
+				trans = matrix44::multiply(Math::matrix44::rotationx(rotx), Math::matrix44::rotationy(roty));
+			}
+			Math::matrix44 test = Math::matrix44::rotationx(roty);
+			test.set_position(pos);
+			msg->SetMatrix(test);
+			this->entity->SendSync(msg.cast<Messaging::Message>());
 
-		/*msg->SetMatrix(trans);
-		this->entity->SendSync(msg.cast<Messaging::Message>());*/
+			trans.set_position(pos + headPos);
+			this->cameraEntity->SetTransform(trans);
+		#elif (__USE_BULLET__)
+
+			this->sensitivity = 0.003f;
+
+			//Send rotation message to entity
+			Ptr<MoveRotate> rot_msg = MoveRotate::Create();
+			float rotsx = mouseMovement.x() * sensitivity;
+			rot_msg->SetAngle(rotsx);
+			__SendSync(this->entity, rot_msg);
+
+			//Now rotate camera 
+			Math::matrix44 trans = this->entity->GetMatrix44(Attr::Transform);
+			trans.set_position(trans.get_position() + headPos);
+			if (mouseMovement.x() != 0 || mouseMovement.y() != 0)
+				rotx += mouseMovement.y() * sensitivity;
+			this->cameraEntity->SetTransform(Math::matrix44::multiply(Math::matrix44::rotationx(rotx) ,trans));
+		#endif
 		}
 	}
+
 }
 
 Math::vector FPSCameraProperty::GetJointPos(IndexT index)
