@@ -42,7 +42,6 @@ FPSCameraProperty::FPSCameraProperty()
 {
 	this->cameraEntity = Graphics::CameraEntity::Create();
 	rotx = 0;
-	roty = 0;
 	fov = 0;
 	closeplane = 0;
 	farplane = 0;
@@ -95,6 +94,7 @@ FPSCameraProperty::OnStart()
 	closeplane = this->entity->GetFloat(Attr::ClosePlane);
 	farplane = this->entity->GetFloat(Attr::FarPlane);
 	sensitivity = this->entity->GetFloat(Attr::Sensitivity);
+	ylimit = n_deg2rad(this->entity->GetFloat(Attr::YLimit) - 0.01f); //Ugly haxxor, ask Nyman and he'll explain :P
 
 	Ptr<GraphicsFeature::GetModelEntity> msg = GraphicsFeature::GetModelEntity::Create();
 	__SendSync(this->entity, msg);
@@ -267,46 +267,33 @@ void FPSCameraProperty::OnBeginFrame()
 		Math::float2 mouseMovement = mouse->GetMovement();
 		Math::float2 screenPos = mouse->GetScreenPosition();
 
-		n_printf("x: %f          y:%f", mouseMovement.x(), mouseMovement.y());
-
 		if(modelEntity->HasCharacter())
 		{
 			headIndex = modelEntity->GetCharacter()->Skeleton().GetJointIndexByName(head);
 			Math::vector headPos = GetJointPos(headIndex);
-			//This method is alot more responsive in havok
-			#if(__USE_HAVOK__)	
-				Ptr<SetTransform> msg = SetTransform::Create();
-				Math::matrix44 trans = this->cameraEntity->GetTransform();
-				Math::float4 pos = this->entity->GetMatrix44(Attr::Transform).get_position();
-				trans.set_position(0);
-				if (mouseMovement.x() != 0 || mouseMovement.y() != 0)
+			Ptr<MoveRotate> rot_msg = MoveRotate::Create();
+			float roty = mouseMovement.x() * sensitivity;
+			rot_msg->SetAngle(roty);
+			__SendSync(this->entity, rot_msg);
+
+			//Now rotate camera 
+			Math::matrix44 trans = this->entity->GetMatrix44(Attr::Transform);
+			trans.set_position(trans.get_position() + headPos);
+			if (mouseMovement.x() != 0 || mouseMovement.y() != 0)
+			{
+				rotx += mouseMovement.y() * sensitivity;
+
+				//Pitch control, dont let the camera spin fully, like ur head could do dat huh?!
+				if (rotx > ylimit)
 				{
-					rotx += mouseMovement.y() * this->sensitivity;
-					roty += mouseMovement.x() * this->sensitivity;
-					trans = matrix44::multiply(Math::matrix44::rotationx(rotx), Math::matrix44::rotationy(roty));
+					rotx = ylimit;
 				}
-				Math::matrix44 test = Math::matrix44::rotationx(roty);
-				test.set_position(pos);
-				msg->SetMatrix(test);
-				this->entity->SendSync(msg.cast<Messaging::Message>());
-
-				trans.set_position(pos + headPos);
-				this->cameraEntity->SetTransform(trans);
-			//Above method do not work in havok, hence this method is necessary, REQUIRES ACTORPHYSICS!
-			#elif (__USE_BULLET__)
-				//Send rotation message to entity
-				Ptr<MoveRotate> rot_msg = MoveRotate::Create();
-				float rotsx = mouseMovement.x() * sensitivity;
-				rot_msg->SetAngle(rotsx);
-				__SendSync(this->entity, rot_msg);
-
-				//Now rotate camera 
-				Math::matrix44 trans = this->entity->GetMatrix44(Attr::Transform);
-				trans.set_position(trans.get_position() + headPos);
-				if (mouseMovement.x() != 0 || mouseMovement.y() != 0)
-					rotx += mouseMovement.y() * sensitivity;
-				this->cameraEntity->SetTransform(Math::matrix44::multiply(Math::matrix44::rotationx(rotx) ,trans));
-			#endif
+				else if(rotx < -ylimit)
+				{
+					rotx = -ylimit;
+				}
+			}
+			this->cameraEntity->SetTransform(Math::matrix44::multiply(Math::matrix44::rotationx(rotx) ,trans));
 		}
 	}
 
