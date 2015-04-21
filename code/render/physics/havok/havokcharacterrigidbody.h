@@ -50,6 +50,9 @@ public:
 	/// handle any changes concerning crouching
 	virtual void HandleCrouching();
 
+	/// apply a global impulse vector at the next time step at a global position
+	virtual void ApplyImpulseAtPos(const Math::vector& impulse, const Math::vector& pos, bool multByMass = false);
+
 protected:
 	/// attach to scene
 	virtual void Attach(Physics::BaseScene * world);
