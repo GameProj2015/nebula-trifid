@@ -42,7 +42,6 @@ FPSCameraProperty::FPSCameraProperty()
 {
 	this->cameraEntity = Graphics::CameraEntity::Create();
 	rotx = 0;
-	roty = 0;
 	fov = 0;
 	closeplane = 0;
 	farplane = 0;
@@ -91,11 +90,11 @@ FPSCameraProperty::OnStart()
 		FocusManager::Instance()->SetCameraFocusEntity(this->entity);
 	}
 	head = this->entity->GetString(Attr::HeadJoint);
-	hip = this->entity->GetString(Attr::HipJoint);
-	fov = this->entity->GetFloat(Attr::Fov);
+	fov = this->entity->GetFloat(Attr::Fov); 
 	closeplane = this->entity->GetFloat(Attr::ClosePlane);
 	farplane = this->entity->GetFloat(Attr::FarPlane);
-	sensitivity = this->entity->GetFloat(Attr::Sensitivity);
+	sensitivity = this->entity->GetFloat(Attr::Sensitivity) / 1000; //Because who says 0.003 sensetivity? You say 3.0, hence we devide by 1000 to make it look "nicer"
+	ylimit = n_deg2rad(this->entity->GetFloat(Attr::YLimit) - 0.01f); //Ugly haxxor, ask Nyman and he'll explain :P
 
 	Ptr<GraphicsFeature::GetModelEntity> msg = GraphicsFeature::GetModelEntity::Create();
 	__SendSync(this->entity, msg);
@@ -107,6 +106,15 @@ FPSCameraProperty::OnStart()
 	msg_hide->SetVisible(false);
 	msg_hide->SetSkin("dummyChar");
 	__SendSync(this->entity, msg_hide);
+
+	//Camera settings
+	Graphics::CameraSettings settings = this->cameraEntity->GetCameraSettings();
+	float aspect = settings.GetAspect();
+	settings.SetupPerspectiveFov(n_deg2rad(fov), aspect, closeplane, farplane);
+	this->cameraEntity->SetCameraSettings(settings);
+
+	//Locks and hide the cursor
+	InputServer::Instance()->SetCursorLocked(true);
 }
 
 //------------------------------------------------------------------------------
@@ -211,17 +219,6 @@ FPSCameraProperty::OnRender()
 	// do just, if we got focus
 	if (FocusManager::Instance()->GetCameraFocusEntity() == this->entity)
 	{
-		/* ========================================================================================= NEB 2 STUFF
-		TODO!?!?! shaker effect stuff
-
-		this->shakeEffectHelper.SetCameraTransform(camera->GetTransform());
-		this->shakeEffectHelper.Update();
-		camera->SetTransform(this->shakeEffectHelper.GetShakeCameraTransform());
-
-		// if enity has transform set the current position between camera and entity as audio listener position
-		// otherwise only use camera transform
-
-		=========================================================================================== NEB 2 STUFF */
 
 		// update audio
 		this->UpdateAudioListenerPosition();
@@ -231,9 +228,6 @@ FPSCameraProperty::OnRender()
 
 		// set point of interest in post effect manager
 		PostEffect::PostEffectManager::Instance()->SetPointOfInterest(trans.get_position());
-
-		// apply transform		
-		//this->cameraEntity->SetTransform(trans);
 	}
 }
 
@@ -273,49 +267,33 @@ void FPSCameraProperty::OnBeginFrame()
 		Math::float2 mouseMovement = mouse->GetMovement();
 		Math::float2 screenPos = mouse->GetScreenPosition();
 
-		n_printf("\nMouse movement: %f %f", mouseMovement.x(), mouseMovement.y());
-		n_printf("\nMouse screen pos: %f %f", screenPos.x(), screenPos.y());
-
 		if(modelEntity->HasCharacter())
 		{
-		headIndex = modelEntity->GetCharacter()->Skeleton().GetJointIndexByName(head);
-		Math::vector headPos = GetJointPos(headIndex);
-		#if(__USE_HAVOK__)	
-			Ptr<SetTransform> msg = SetTransform::Create();
-			Math::matrix44 trans = this->cameraEntity->GetTransform();
-			Math::float4 pos = this->entity->GetMatrix44(Attr::Transform).get_position();
-			trans.set_position(0); //
-			this->sensitivity = 0.003f;
-			if (mouseMovement.x() != 0 || mouseMovement.y() != 0)
-			{
-				rotx += mouseMovement.y()*sensitivity;
-				roty += mouseMovement.x()*sensitivity;
-				trans = matrix44::multiply(Math::matrix44::rotationx(rotx), Math::matrix44::rotationy(roty));
-			}
-			Math::matrix44 test = Math::matrix44::rotationx(roty);
-			test.set_position(pos);
-			msg->SetMatrix(test);
-			this->entity->SendSync(msg.cast<Messaging::Message>());
-
-			trans.set_position(pos + headPos);
-			this->cameraEntity->SetTransform(trans);
-		#elif (__USE_BULLET__)
-
-			this->sensitivity = 0.003f;
-
-			//Send rotation message to entity
+			headIndex = modelEntity->GetCharacter()->Skeleton().GetJointIndexByName(head);
+			Math::vector headPos = GetJointPos(headIndex);
 			Ptr<MoveRotate> rot_msg = MoveRotate::Create();
-			float rotsx = mouseMovement.x() * sensitivity;
-			rot_msg->SetAngle(rotsx);
+			float roty = mouseMovement.x() * sensitivity;
+			rot_msg->SetAngle(roty);
 			__SendSync(this->entity, rot_msg);
 
 			//Now rotate camera 
 			Math::matrix44 trans = this->entity->GetMatrix44(Attr::Transform);
 			trans.set_position(trans.get_position() + headPos);
 			if (mouseMovement.x() != 0 || mouseMovement.y() != 0)
+			{
 				rotx += mouseMovement.y() * sensitivity;
+
+				//Pitch control, dont let the camera spin fully, like ur head could do dat huh?!
+				if (rotx > ylimit)
+				{
+					rotx = ylimit;
+				}
+				else if(rotx < -ylimit)
+				{
+					rotx = -ylimit;
+				}
+			}
 			this->cameraEntity->SetTransform(Math::matrix44::multiply(Math::matrix44::rotationx(rotx) ,trans));
-		#endif
 		}
 	}
 
