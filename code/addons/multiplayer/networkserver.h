@@ -125,6 +125,7 @@ private:
 	bool connectedToNatPunchThrough;		
 	Ptr<Attr::AttributeTable> masterResult;
 	Threading::SafeFlag doneFlag;
+	RakNet::Time lastUpdateTime;
 };
 
 //------------------------------------------------------------------------------
