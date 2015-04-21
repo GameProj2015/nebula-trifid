@@ -348,16 +348,4 @@ HavokCharacterRigidBody::HandleCrouching()
 	}
 }
 
-//
-/**
-*/
-void 
-HavokCharacterRigidBody::ApplyImpulseAtPos(const Math::vector& impulse, const Math::vector& pos, bool multByMass)
-{
-	if (characterRigidBody)
-	{
-		characterRigidBody->m_character->applyPointImpulse(Neb2HkFloat4(impulse),Neb2HkFloat4(pos));
-	}
-}
-
 }
