@@ -1,53 +1,71 @@
 #pragma once
 //------------------------------------------------------------------------------
 /**
-    @class GraphicsFeature::CameraProperty
+    @class FPSCameraFeature::FPSCameraProperty
 
-    A camera property adds the ability to manipulate the camera to an entity.
-    Please note that more advanced camera properties should always be 
-    derived from the class camera property if camera focus handling is desired,
-    since the FocusManager will only work on game entities which have
-    a CameraProperty (or a subclass) attached.
+    FPS Camera property
 
-    It is completely ok though to handle camera manipulation in a property
-    not derived from CameraProperty, but please be aware that the
-    FocusManager will ignore those.
+	Requires ActorPhysics or an property that can handle MoveRotate messages!
 
-    The camera property will generally 
-    
-    (C) 2007 Radon Labs GmbH
-    (C) 2013-2014 Individual contributors, see AUTHORS file
+	(C) Patrik Nyman, Mariusz Waclawek
 */
 
-#include "basegamefeature/managers/factorymanager.h"
 #include "game/property.h"
-#include "basegamefeature/basegameprotocol.h"
 #include "graphicsfeature/graphicsattr/graphicsattributes.h"
+#include "graphicsfeatureproperties.h"
 
 namespace FPSCameraFeature
 {
-class FPSCameraProperty : public Game::Property
-{
-	__DeclareClass(FPSCameraProperty);
-	__SetupExternalAttributes();
-public:
-    /// constructor
-    FPSCameraProperty();
-    /// destructor
-    virtual ~FPSCameraProperty();
-    /// called from Entity::DeactivateProperties()
-    virtual void OnDeactivate();
-    /// setup accepted messages
-    virtual void SetupAcceptedMessages();
-    /// setup callbacks for this property
-    virtual void SetupCallbacks();    
-    /// return true if currently has camera focus
-    virtual bool HasFocus() const;    
-    /// handle a single message
-    virtual void HandleMessage(const Ptr<Messaging::Message>& msg);
-protected:
-};
-__RegisterClass(FPSCameraProperty);
+	class FPSCameraProperty : public GraphicsFeature::CameraProperty
+	{
+		__DeclareClass(FPSCameraProperty);
+		__SetupExternalAttributes();
+	public:
+		/// constructor
+		FPSCameraProperty();
+		/// destructor
+		virtual ~FPSCameraProperty();
+		/// called from Entity::DeactivateProperties()
+		virtual void OnDeactivate();
+		/// setup accepted messages
+		virtual void SetupAcceptedMessages();
+		/// setup callbacks for this property
+		virtual void SetupCallbacks();
+		/// called from within Entity::OnStart() after OnLoad when the complete world exist
+		virtual void OnStart();
+		/// called when camera focus is obtained
+		virtual void OnObtainCameraFocus();
+		/// called when camera focus is lost
+		virtual void OnLoseCameraFocus();
+		/// called before rendering happens
+		virtual void OnRender();
+		/// return true if currently has camera focus
+		virtual bool HasFocus() const;
+		/// handle a single message
+		virtual void HandleMessage(const Ptr<Messaging::Message>& msg);
+		/// called when input focus is gained
+		virtual void OnObtainInputFocus();
+		/// called when input focus is lost
+		virtual void OnLoseInputFocus();
+		/// return true if currently has input focus
+		/// called on begin of frame
+		virtual void OnBeginFrame();
+	protected:
 
-}; // namespace GraphicsFeature
+		///Get joint position by index
+		Math::vector GetJointPos(IndexT index);
+
+		/// update audio listener position
+		void UpdateAudioListenerPosition() const;
+		Ptr<Graphics::ModelEntity> modelEntity;
+		float rotx, fov, closeplane, farplane, sensitivity, ylimit;
+		Util::StringAtom head;
+		Util::String hip;
+		IndexT headIndex;
+		IndexT hipIndex;
+		Ptr<Game::Entity> ent;
+	};
+	__RegisterClass(FPSCameraProperty);
+
+}; // namespace FPSCameraFeature
 //------------------------------------------------------------------------------
