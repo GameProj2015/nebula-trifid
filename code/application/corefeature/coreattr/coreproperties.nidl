@@ -12,4 +12,12 @@
   <Attribute name="YLimit"/>
 	<Attribute name="Sensitivity"/>
   </Property>
+  
+  <Protocol namespace="FPSCameraFeature" name="FPSCameraProtocol">
+	<Dependency header="math/matrix44.h"/>
+	
+	<Message name="GetCameraTransform" fourcc="CTCV" scripted="true">
+	  <InArg name="Transform" type="Math::matrix44" />
+	</Message>
+  </Protocol>
 </Nebula3>		

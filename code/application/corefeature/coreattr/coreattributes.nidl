@@ -2,10 +2,10 @@
 <Nebula3>
   <AttributeLib>
 	  <Attribute name="HeadJoint" fourcc="CTHJ" accessMode="ReadWrite" type="String"/>
-	  <Attribute name="Fov" fourcc="CTFV" accessMode="ReadWrite" type="Float" defualt="90"/>
-	  <Attribute name="ClosePlane" fourcc="CTCP" accessMode="ReadWrite" type="Float" defualt="0.1"/>
-	  <Attribute name="FarPlane" fourcc="CTFP" accessMode="ReadWrite" type="Float" defualt="500"/>
-	  <Attribute name="Sensitivity" fourcc="CTST" accessMode="ReadWrite" type="Float" defualt="0.003" />
-    <Attribute name="YLimit" fourcc="CTYL" accessMode="ReadWrite" type="Float" defualt="90" />
+	  <Attribute name="Fov" fourcc="CTFV" accessMode="ReadWrite" type="Float" default="90.0f"/>
+	  <Attribute name="ClosePlane" fourcc="CTCP" accessMode="ReadWrite" type="Float" default="0.1f"/>
+	  <Attribute name="FarPlane" fourcc="CTFP" accessMode="ReadWrite" type="Float" default="500.0f"/>
+	  <Attribute name="Sensitivity" fourcc="CTST" accessMode="ReadWrite" type="Float" default="3.0f" />
+    <Attribute name="YLimit" fourcc="CTYL" accessMode="ReadWrite" type="Float" default="90.0f" />
   </AttributeLib>
 </Nebula3>		

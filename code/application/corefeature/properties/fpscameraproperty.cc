@@ -18,7 +18,7 @@
 #include "basegamefeature/basegameprotocol.h"
 #include "input/mouse.h"
 #include "corefeature/coreattr/coreattributes.h"
-
+#include "corefeature/coreattr/coreproperties.h"
 #include "graphics/modelentity.h"
 #include "characters/character.h"
 #include "characters/base/skinnedmeshrendererbase.h"
@@ -46,6 +46,7 @@ FPSCameraProperty::FPSCameraProperty()
 	closeplane = 0;
 	farplane = 0;
 	sensitivity = 0;
+	rotOffset = n_deg2rad(180);
 }
 
 //------------------------------------------------------------------------------
@@ -74,6 +75,7 @@ FPSCameraProperty::SetupAcceptedMessages()
 {
 	this->RegisterMessage(CameraFocus::Id);
 	this->RegisterMessage(SetTransform::Id);
+	this->RegisterMessage(GetCameraTransform::Id);
 	Game::Property::SetupAcceptedMessages();
 }
 
@@ -151,6 +153,11 @@ FPSCameraProperty::HandleMessage(const Ptr<Messaging::Message>& msg)
 		{
 			this->OnLoseCameraFocus();
 		}
+	}
+	if (msg->CheckId(GetCameraTransform::Id))
+	{
+		Ptr<GetCameraTransform> m = msg.cast<GetCameraTransform>();
+		m->SetTransform(this->cameraEntity->GetTransform());
 	}
 	Property::HandleMessage(msg);
 }
@@ -266,7 +273,7 @@ void FPSCameraProperty::OnBeginFrame()
 
 		Math::float2 mouseMovement = mouse->GetMovement();
 		Math::float2 screenPos = mouse->GetScreenPosition();
-
+		Math::matrix44 tt = this->entity->GetMatrix44(Attr::Transform);
 		if(modelEntity->HasCharacter())
 		{
 			headIndex = modelEntity->GetCharacter()->Skeleton().GetJointIndexByName(head);
@@ -277,8 +284,9 @@ void FPSCameraProperty::OnBeginFrame()
 			__SendSync(this->entity, rot_msg);
 
 			//Now rotate camera 
-			Math::matrix44 trans = this->entity->GetMatrix44(Attr::Transform);
+			Math::matrix44 trans = matrix44::multiply(matrix44::rotationy(rotOffset), this->entity->GetMatrix44(Attr::Transform));
 			trans.set_position(trans.get_position() + headPos);
+
 			if (mouseMovement.x() != 0 || mouseMovement.y() != 0)
 			{
 				rotx += mouseMovement.y() * sensitivity;

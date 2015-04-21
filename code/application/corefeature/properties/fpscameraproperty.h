@@ -58,7 +58,7 @@ namespace FPSCameraFeature
 		/// update audio listener position
 		void UpdateAudioListenerPosition() const;
 		Ptr<Graphics::ModelEntity> modelEntity;
-		float rotx, fov, closeplane, farplane, sensitivity, ylimit;
+		float rotx, fov, closeplane, farplane, sensitivity, ylimit, rotOffset;
 		Util::StringAtom head;
 		Util::String hip;
 		IndexT headIndex;
