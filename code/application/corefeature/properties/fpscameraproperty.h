@@ -1,22 +1,13 @@
 #pragma once
 //------------------------------------------------------------------------------
 /**
-    @class GraphicsFeature::CameraProperty
+    @class FPSCameraFeature::FPSCameraProperty
 
-    A camera property adds the ability to manipulate the camera to an entity.
-    Please note that more advanced camera properties should always be 
-    derived from the class camera property if camera focus handling is desired,
-    since the FocusManager will only work on game entities which have
-    a CameraProperty (or a subclass) attached.
+    FPS Camera property
 
-    It is completely ok though to handle camera manipulation in a property
-    not derived from CameraProperty, but please be aware that the
-    FocusManager will ignore those.
+	Requires ActorPhysics or an property that can handle MoveRotate messages!
 
-    The camera property will generally 
-    
-    (C) 2007 Radon Labs GmbH
-    (C) 2013-2014 Individual contributors, see AUTHORS file
+	(C) Patrik Nyman, Mariusz Waclawek
 */
 
 #include "game/property.h"
@@ -67,7 +58,7 @@ namespace FPSCameraFeature
 		/// update audio listener position
 		void UpdateAudioListenerPosition() const;
 		Ptr<Graphics::ModelEntity> modelEntity;
-		float rotx, roty, fov, closeplane, farplane, sensitivity;
+		float rotx, fov, closeplane, farplane, sensitivity, ylimit;
 		Util::StringAtom head;
 		Util::String hip;
 		IndexT headIndex;
