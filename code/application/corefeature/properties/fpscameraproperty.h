@@ -53,17 +53,19 @@ namespace FPSCameraFeature
 	protected:
 
 		///Get joint position by index
-		Math::vector GetJointPos(IndexT index);
+		Math::matrix44 GetJointPos(IndexT index);
 
 		/// update audio listener position
 		void UpdateAudioListenerPosition() const;
 		Ptr<Graphics::ModelEntity> modelEntity;
-		float rotx, fov, closeplane, farplane, sensitivity, ylimit;
+		float rotx, fov, closeplane, farplane, sensitivity, ylimit, rotOffset;
 		Util::StringAtom head;
 		Util::String hip;
 		IndexT headIndex;
 		IndexT hipIndex;
 		Ptr<Game::Entity> ent;
+		/// debugging
+		bool debug;
 	};
 	__RegisterClass(FPSCameraProperty);
 
