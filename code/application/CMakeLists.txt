@@ -264,6 +264,8 @@ set(application_corefeature__properties
 set(application_files_corefeature__managers
 	corefeature/managers/keybindingmanager.cc
 	corefeature/managers/keybindingmanager.h
+	corefeature/managers/keybinding.cc
+	corefeature/managers/keybinding.h
 )
 source_group("corefeature\\managers" FILES ${application_files_corefeature__managers})
 
