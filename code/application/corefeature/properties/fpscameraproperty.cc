@@ -75,7 +75,7 @@ void
 FPSCameraProperty::SetupAcceptedMessages()
 {
 	this->RegisterMessage(CameraFocus::Id);
-	//this->RegisterMessage(SetTransform::Id);
+	this->RegisterMessage(GetCameraEntity::Id);
 	this->RegisterMessage(GetCameraTransform::Id);
 	Game::Property::SetupAcceptedMessages();
 }
@@ -160,6 +160,11 @@ FPSCameraProperty::HandleMessage(const Ptr<Messaging::Message>& msg)
 	{
 		Ptr<GetCameraTransform> m = msg.cast<GetCameraTransform>();
 		m->SetTransform(this->cameraEntity->GetTransform());
+	}
+	if(msg->CheckId(GetCameraEntity::Id))
+	{
+		Ptr<GetCameraEntity> m = msg.cast<GetCameraEntity>();
+		m->SetCamera(this->cameraEntity);
 	}
 	Property::HandleMessage(msg);
 }
