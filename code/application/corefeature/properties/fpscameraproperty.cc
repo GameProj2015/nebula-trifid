@@ -47,6 +47,7 @@ FPSCameraProperty::FPSCameraProperty()
 	farplane = 0;
 	sensitivity = 0;
 	rotOffset = n_deg2rad(180);
+	debug = false;
 }
 
 //------------------------------------------------------------------------------
@@ -74,7 +75,7 @@ void
 FPSCameraProperty::SetupAcceptedMessages()
 {
 	this->RegisterMessage(CameraFocus::Id);
-	this->RegisterMessage(SetTransform::Id);
+	//this->RegisterMessage(SetTransform::Id);
 	this->RegisterMessage(GetCameraTransform::Id);
 	Game::Property::SetupAcceptedMessages();
 }
@@ -97,6 +98,7 @@ FPSCameraProperty::OnStart()
 	farplane = this->entity->GetFloat(Attr::FarPlane);
 	sensitivity = this->entity->GetFloat(Attr::Sensitivity) / 1000; //Because who says 0.003 sensetivity? You say 3.0, hence we devide by 1000 to make it look "nicer"
 	ylimit = n_deg2rad(this->entity->GetFloat(Attr::YLimit) - 0.01f); //Ugly haxxor, ask Nyman and he'll explain :P
+	debug = this->entity->GetBool(Attr::Debug);
 
 	Ptr<GraphicsFeature::GetModelEntity> msg = GraphicsFeature::GetModelEntity::Create();
 	__SendSync(this->entity, msg);
@@ -276,30 +278,45 @@ void FPSCameraProperty::OnBeginFrame()
 		Math::matrix44 tt = this->entity->GetMatrix44(Attr::Transform);
 		if(modelEntity->HasCharacter())
 		{
-			headIndex = modelEntity->GetCharacter()->Skeleton().GetJointIndexByName(head);
-			Math::vector headPos = GetJointPos(headIndex);
 			Ptr<MoveRotate> rot_msg = MoveRotate::Create();
 			float roty = mouseMovement.x() * sensitivity;
 			rot_msg->SetAngle(roty);
 			__SendSync(this->entity, rot_msg);
 
 			//Now rotate camera 
-			Math::matrix44 trans = matrix44::multiply(matrix44::rotationy(rotOffset), this->entity->GetMatrix44(Attr::Transform));
-			trans.set_position(trans.get_position() + headPos);
-
-			if (mouseMovement.x() != 0 || mouseMovement.y() != 0)
+			/*
+				THIS IS THE CORRECT CODE, IT WILL BE USED IF DEBUGGING IS NOT CHECKED
+				TO BE REMOVED LATER ON
+			*/
+			Math::matrix44 trans = this->entity->GetMatrix44(Attr::Transform);
+			if(!debug)
 			{
-				rotx += mouseMovement.y() * sensitivity;
+				headIndex = modelEntity->GetCharacter()->Skeleton().GetJointIndexByName(head);
+				Math::matrix44 headPos = GetJointPos(headIndex);
+				headPos = matrix44::multiply(headPos, trans);
+			}
+			/*
+				DEBUG CODE, USED DURING TESTING AS THE DUMMYCHAR DOESNT HAVE A GOOD FPS JOINT!
+			*/
+			else
+			{
+				trans = matrix44::multiply(matrix44::rotationy(rotOffset), trans);
+				headIndex = modelEntity->GetCharacter()->Skeleton().GetJointIndexByName(head);
+				Math::matrix44 headTransform = GetJointPos(headIndex);
+				vector v = headTransform.get_position();
+				trans.set_position(trans.get_position() + v);
+			}
 
-				//Pitch control, dont let the camera spin fully, like ur head could do dat huh?!
-				if (rotx > ylimit)
-				{
-					rotx = ylimit;
-				}
-				else if(rotx < -ylimit)
-				{
-					rotx = -ylimit;
-				}
+			//Rotate along the X axis
+			rotx += mouseMovement.y() * sensitivity;
+			//Pitch control, dont let the camera spin fully, like ur head could do dat huh?!
+			if (rotx > ylimit)
+			{
+				rotx = ylimit;
+			}
+			else if(rotx < -ylimit)
+			{
+				rotx = -ylimit;
 			}
 			this->cameraEntity->SetTransform(Math::matrix44::multiply(Math::matrix44::rotationx(rotx) ,trans));
 		}
@@ -307,12 +324,12 @@ void FPSCameraProperty::OnBeginFrame()
 
 }
 
-Math::vector FPSCameraProperty::GetJointPos(IndexT index)
+Math::matrix44 FPSCameraProperty::GetJointPos(IndexT index)
 {
 	//Get joint position
 	const Ptr<Characters::CharacterInstance>& charInst = modelEntity.cast<Graphics::ModelEntity>()->GetCharacterInstance();
 	charInst->WaitUpdateDone();
-	return charInst->Skeleton().GetJointMatrix(index).get_position();
+	return charInst->Skeleton().GetJointMatrix(index);
 }
 
 }; // namespace GraphicsFeature

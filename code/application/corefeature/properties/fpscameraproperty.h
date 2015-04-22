@@ -53,7 +53,7 @@ namespace FPSCameraFeature
 	protected:
 
 		///Get joint position by index
-		Math::vector GetJointPos(IndexT index);
+		Math::matrix44 GetJointPos(IndexT index);
 
 		/// update audio listener position
 		void UpdateAudioListenerPosition() const;
@@ -64,6 +64,8 @@ namespace FPSCameraFeature
 		IndexT headIndex;
 		IndexT hipIndex;
 		Ptr<Game::Entity> ent;
+		/// debugging
+		bool debug;
 	};
 	__RegisterClass(FPSCameraProperty);
 

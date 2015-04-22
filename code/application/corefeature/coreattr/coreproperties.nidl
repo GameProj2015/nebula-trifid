@@ -11,6 +11,7 @@
 	<Attribute name="FarPlane"/>
   <Attribute name="YLimit"/>
 	<Attribute name="Sensitivity"/>
+  <Attribute name="Debug"/>
   </Property>
   
   <Protocol namespace="FPSCameraFeature" name="FPSCameraProtocol">

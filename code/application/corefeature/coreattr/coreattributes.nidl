@@ -7,5 +7,6 @@
 	  <Attribute name="FarPlane" fourcc="CTFP" accessMode="ReadWrite" type="Float" default="500.0f"/>
 	  <Attribute name="Sensitivity" fourcc="CTST" accessMode="ReadWrite" type="Float" default="3.0f" />
     <Attribute name="YLimit" fourcc="CTYL" accessMode="ReadWrite" type="Float" default="90.0f" />
+    <Attribute name="Debug" fourcc="CTDB" accessMode="ReadWrite" type="Bool" default="true" />
   </AttributeLib>
 </Nebula3>		
