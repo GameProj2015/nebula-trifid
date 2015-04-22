@@ -5,12 +5,20 @@
   </AttributeLib>
 
   <Property name="FPSCameraFeature::FPSCameraProperty" derivedFrom="GraphicsFeature::CameraProperty" header="corefeature/properties/fpscameraproperty.h">
-	<Attribute name="CharacterId"/>
 	<Attribute name="HeadJoint"/>
-	<Attribute name="HipJoint"/>
 	<Attribute name="Fov"/>
 	<Attribute name="ClosePlane"/>
 	<Attribute name="FarPlane"/>
+  <Attribute name="YLimit"/>
 	<Attribute name="Sensitivity"/>
+  <Attribute name="Debug"/>
   </Property>
+  
+  <Protocol namespace="FPSCameraFeature" name="FPSCameraProtocol">
+	<Dependency header="math/matrix44.h"/>
+	
+	<Message name="GetCameraTransform" fourcc="CTCV" scripted="true">
+	  <InArg name="Transform" type="Math::matrix44" />
+	</Message>
+  </Protocol>
 </Nebula3>		
