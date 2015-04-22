@@ -14,6 +14,7 @@ namespace CoreFeature
 
 	Keybinding::Keybinding()
 	{
+		isKey = true;
 	}
 
 	Keybinding::~Keybinding()
@@ -33,11 +34,18 @@ namespace CoreFeature
 	void Keybinding::setKey(Input::Key::Code key)
 	{
 		this->key = key;
+		isKey = true;
 	}
 
 	void Keybinding::setMouseButton(Input::MouseButton::Code mouseButton)
 	{
 		this->mouseButton = mouseButton;
+		isKey = false;
+	}
+
+	void Keybinding::setIsKey(bool isKey)
+	{
+		this->isKey = isKey;
 	}
 
 	Util::String Keybinding::getKeyName()
@@ -52,11 +60,24 @@ namespace CoreFeature
 
 	Input::Key::Code Keybinding::getKey()
 	{
-		return key;
+		if(isKey)
+		{
+			return key;
+		}
+		return Input::Key::InvalidKey;
 	}
 
 	Input::MouseButton::Code Keybinding::getMouseButton()
 	{
-		return mouseButton;
+		if(!isKey)
+		{
+			return mouseButton;
+		}
+		return Input::MouseButton::InvalidMouseButton;
+	}
+
+	bool Keybinding::getIsKey()
+	{
+		return isKey;
 	}
 };

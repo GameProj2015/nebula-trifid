@@ -32,14 +32,17 @@ namespace CoreFeature
 		void setActionName(Util::String actionName);
 		void setKey(Input::Key::Code key);
 		void setMouseButton(Input::MouseButton::Code mouseButton);
+		void setIsKey(bool isKey);
 		Util::String getKeyName();
 		Util::String getActionName();
 		Input::Key::Code getKey();
 		Input::MouseButton::Code getMouseButton();
+		bool getIsKey();
 	private:
 		Util::String keyName;
 		Util::String actionName;
 		Input::Key::Code key;
 		Input::MouseButton::Code mouseButton;
+		bool isKey;
 	};
 };
