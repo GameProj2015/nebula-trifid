@@ -293,7 +293,7 @@ void FPSCameraProperty::OnBeginFrame()
 			{
 				headIndex = modelEntity->GetCharacter()->Skeleton().GetJointIndexByName(head);
 				Math::matrix44 headPos = GetJointPos(headIndex);
-				headPos = matrix44::multiply(headPos, trans);
+				trans = matrix44::multiply(headPos, trans);
 			}
 			/*
 				DEBUG CODE, USED DURING TESTING AS THE DUMMYCHAR DOESNT HAVE A GOOD FPS JOINT!
