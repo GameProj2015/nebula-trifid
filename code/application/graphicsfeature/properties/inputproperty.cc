@@ -157,8 +157,8 @@ InputProperty::OnBeginFrame()
         if (kbd->KeyDown(Key::Space))
         {
             // send camera reset msg
-            Ptr<CameraReset> camReset = CameraReset::Create();
-            this->entity->SendSync(camReset.cast<Messaging::Message>());
+            //Ptr<CameraReset> camReset = CameraReset::Create();
+            //this->entity->SendSync(camReset.cast<Messaging::Message>());
         }                
         if (mouse->ButtonPressed(MouseButton::RightButton) || this->entity->GetBool(Attr::InputMouseGrab))
         {
@@ -309,14 +309,14 @@ InputProperty::OnCameraZoomOut()
 
 void InputProperty::OnStart()
 {
-	if (this->entity->GetBool(Attr::InputFocus))
-	{		
-		// orientate connected entity according to camera 
-		Ptr<MoveTurn> msg2 = MoveTurn::Create();
-		msg2->SetDirection(vector(0, 0, -1));
-		msg2->SetCameraRelative(true);
-		this->entity->SendSync(msg2.cast<Messaging::Message>());
-	}
+	//if (this->entity->GetBool(Attr::InputFocus))
+	//{		
+	//	// orientate connected entity according to camera 
+	//	Ptr<MoveTurn> msg2 = MoveTurn::Create();
+	//	msg2->SetDirection(vector(0, 0, -1));
+	//	msg2->SetCameraRelative(true);
+	//	this->entity->SendSync(msg2.cast<Messaging::Message>());
+	//}
 }
 
 } // namespace GraphicsFeature

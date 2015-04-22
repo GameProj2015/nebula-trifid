@@ -2,6 +2,7 @@
 <Nebula3>
   <AttributeLib>
     <Dependency header="corefeature/coreattr/coreattributes.h" />
+    <Dependency header="graphics/cameraentity.h" />
   </AttributeLib>
 
   <Property name="FPSCameraFeature::FPSCameraProperty" derivedFrom="GraphicsFeature::CameraProperty" header="corefeature/properties/fpscameraproperty.h">
@@ -11,5 +12,18 @@
 	<Attribute name="FarPlane"/>
   <Attribute name="YLimit"/>
 	<Attribute name="Sensitivity"/>
+  <Attribute name="Debug"/>
   </Property>
+  
+  <Protocol namespace="FPSCameraFeature" name="FPSCameraProtocol">
+	<Dependency header="math/matrix44.h"/>
+	
+	  <Message name="GetCameraTransform" fourcc="CTCV" scripted="true">
+	    <InArg name="Transform" type="Math::matrix44" />
+	  </Message>
+
+    <Message name="GetCameraEntity" fourcc="CTGC">
+      <InArg name="Camera" type="Ptr<Graphics::CameraEntity>"/>
+    </Message>
+  </Protocol>
 </Nebula3>		

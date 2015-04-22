@@ -26,20 +26,60 @@ namespace CoreFeature
 
 	//------------------------------------------------------------------------------
 	/**
-		Adds one key binding to the list of key bindings. This will also update the key binding if it already exists.
+		Adds one key binding to the list of key bindings.
 	*/
 	void KeyBindingManager::AddKeyBinding(const Util::String& name, const Input::Key::Code keyCode)
 	{
-		this->keyBindings.Add(name, keyCode);
+		Ptr<CoreFeature::Keybinding> keybinding = CoreFeature::Keybinding::Create();
+		keybinding->setActionName(name);
+		keybinding->setKeyName(GetNameForKeyCode(keyCode));
+		keybinding->setKey(keyCode);
+		this->keyBindings.Append(keybinding);
 	}
 
 	//------------------------------------------------------------------------------
 	/**
 		Adds one mouse key binding to the list of key bindings. This will also update the mouse binding if it already exists.
 	*/
-	void KeyBindingManager::AddMouseBinding(const Util::String& name, const Input::MouseButton::Code keyCode)
+	void KeyBindingManager::AddMouseBinding(const Util::String& name, const Input::MouseButton::Code mouseButton)
 	{
-		this->mouseBindings.Add(name, keyCode);
+		Ptr<CoreFeature::Keybinding> keybinding = CoreFeature::Keybinding::Create();
+		keybinding->setActionName(name);
+		keybinding->setKeyName(GetNameForMouseButtonCode(mouseButton));
+		keybinding->setMouseButton(mouseButton);
+		this->keyBindings.Append(keybinding);
+	}
+
+	//------------------------------------------------------------------------------
+	/**
+		Removes one key or mouse button binding to the lists of bindings.
+	*/
+	void KeyBindingManager::UpdateKeyBinding(const Util::String& name, const Input::Key::Code keyCode)
+	{
+		for(int i = 0; i < keyBindings.Size(); i++)
+		{
+			if(keyBindings[i]->getActionName() == name)
+			{
+				keyBindings[i]->setKey(keyCode);
+				keyBindings[i]->setKeyName(GetNameForKeyCode(keyCode));
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------
+	/**
+		Removes one key or mouse button binding to the lists of bindings.
+	*/
+	void KeyBindingManager::UpdateMouseBinding(const Util::String& name, const Input::MouseButton::Code mouseButton)
+	{
+		for(int i = 0; i < keyBindings.Size(); i++)
+		{
+			if(keyBindings[i]->getActionName() == name)
+			{
+				keyBindings[i]->setMouseButton(mouseButton);
+				keyBindings[i]->setKeyName(GetNameForMouseButtonCode(mouseButton));
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------------
@@ -48,13 +88,13 @@ namespace CoreFeature
 	*/
 	void KeyBindingManager::RemoveBinding(const Util::String& name)
 	{
-		if(keyBindings.Contains(name))
+		for(int i = 0; i < keyBindings.Size(); i++)
 		{
-			keyBindings.Erase(name);
-		}
-		if(mouseBindings.Contains(name))
-		{
-			mouseBindings.Erase(name);
+			if(keyBindings[i]->getActionName() == name)
+			{
+				keyBindings.EraseIndex(i);
+				return;
+			}
 		}
 	}
 
@@ -77,16 +117,21 @@ namespace CoreFeature
 						{
 							Util::String name = reader->GetString("Name");
 							Util::String keyName = reader->GetString("Key");
+
+							Ptr<CoreFeature::Keybinding> keybinding = CoreFeature::Keybinding::Create();
+							keybinding->setKeyName(keyName);
+							keybinding->setActionName(name);
 							if(keyNames.Contains(keyName))
 							{
 								Input::Key::Code key = keyNames[keyName];
-								keyBindings.Add(name, key);
+								keybinding->setKey(key);
 							}
 							if(mouseNames.Contains(keyName))
 							{
 								Input::MouseButton::Code mouseButton = mouseNames[keyName];
-								mouseBindings.Add(name, mouseButton);
+								keybinding->setMouseButton(mouseButton);
 							}
+							keyBindings.Append(keybinding);
 						} while (reader->SetToNextChild());
 					}
 				}
@@ -97,34 +142,34 @@ namespace CoreFeature
 
 	//------------------------------------------------------------------------------
 	/**
-		Returns the key code the the desired key binding name.
+		Returns the key code the the desired key binding name. Has to be a key.
 	*/
 	Input::Key::Code KeyBindingManager::GetKey(Util::String name)
 	{
-		if(keyBindings.Contains(name))
+		for(int i = 0; i < keyBindings.Size(); i++)
 		{
-			return keyBindings[name];
+			if(keyBindings[i]->getActionName() == name)
+			{
+				return keyBindings[i]->getKey();
+			}
 		}
-		else
-		{
-			return Input::Key::Code::InvalidKey;
-		}
+		return Input::Key::Code::InvalidKey;
 	}
 
 	//------------------------------------------------------------------------------
 	/**
-		Returns the key code the the desired mouse binding name.
+		Returns the key code the the desired mouse binding name. Has to be a mouse button.
 	*/
 	Input::MouseButton::Code KeyBindingManager::GetMouseButton(Util::String name)
 	{
-		if(mouseBindings.Contains(name))
+		for(int i = 0; i < keyBindings.Size(); i++)
 		{
-			return mouseBindings[name];
+			if(keyBindings[i]->getActionName() == name)
+			{
+				return keyBindings[i]->getMouseButton();
+			}
 		}
-		else
-		{
-			return Input::MouseButton::InvalidMouseButton;
-		}
+		return Input::MouseButton::Code::InvalidMouseButton;
 	}
 
 	//------------------------------------------------------------------------------
@@ -206,18 +251,47 @@ namespace CoreFeature
 	/**
 		Returns the entire dictionary of key bindings.
 	*/
-	Util::Dictionary<Util::String, Input::Key::Code> KeyBindingManager::GetKeyBindings()
+	Util::Array<Ptr<CoreFeature::Keybinding>> KeyBindingManager::GetKeyBindings()
 	{
 		return keyBindings;
 	}
 
 	//------------------------------------------------------------------------------
 	/**
-		Returns the entire dictionary of mouse key bindings.
+		Returns the entire dictionary of possible key binding names.
 	*/
-	Util::Dictionary<Util::String, Input::MouseButton::Code> KeyBindingManager::GetMouseBindings()
+	Util::Dictionary<Util::String, Input::Key::Code> KeyBindingManager::GetKeyNames()
 	{
-		return mouseBindings;
+		return keyNames;
+	}
+
+	//------------------------------------------------------------------------------
+	/**
+		Returns the entire dictionary of possible mouse key binding names.
+	*/
+	Util::Dictionary<Util::String, Input::MouseButton::Code> KeyBindingManager::GetMouseNames()
+	{
+		return mouseNames;
+	}
+
+	//------------------------------------------------------------------------------
+	/**
+		Returns the name of the key.
+	*/
+	Util::String KeyBindingManager::GetNameForKeyCode(Input::Key::Code key)
+	{
+		Util::Array<Input::Key::Code> keyCodeArray = keyNames.ValuesAsArray();
+		return keyNames.KeyAtIndex(keyCodeArray.FindIndex(key));
+	}
+
+	//------------------------------------------------------------------------------
+	/**
+		Returns the name of the mouse button.
+	*/
+	Util::String KeyBindingManager::GetNameForMouseButtonCode(Input::MouseButton::Code mouseButton)
+	{
+		Util::Array<Input::MouseButton::Code> keyCodeArray = mouseNames.ValuesAsArray();
+		return mouseNames.KeyAtIndex(keyCodeArray.FindIndex(mouseButton));
 	}
 
 	//------------------------------------------------------------------------------
@@ -256,7 +330,7 @@ namespace CoreFeature
 		keyNames.Add("Control", Input::Key::Code::Control);
 		keyNames.Add("Menu", Input::Key::Code::Menu);
 		keyNames.Add("Pause", Input::Key::Code::Pause);
-		keyNames.Add("Capital", Input::Key::Code::Capital);
+		keyNames.Add("Caps Lock", Input::Key::Code::Capital);
 		keyNames.Add("Escape", Input::Key::Code::Escape);
 		keyNames.Add("Convert", Input::Key::Code::Convert);
 		keyNames.Add("Non Convert", Input::Key::Code::NonConvert);
@@ -395,8 +469,6 @@ namespace CoreFeature
 		keyNames.Add("X", Input::Key::Code::X);
 		keyNames.Add("Y", Input::Key::Code::Y);
 		keyNames.Add("Z", Input::Key::Code::Z);
-		keyNames.Add("NumKeyCodes", Input::Key::Code::NumKeyCodes);
-		keyNames.Add("InvalidKey", Input::Key::Code::InvalidKey);
 	}
 
 	//------------------------------------------------------------------------------
@@ -408,7 +480,5 @@ namespace CoreFeature
 		mouseNames.Add("Left Mouse Button", Input::MouseButton::Code::LeftButton);
 		mouseNames.Add("Right Mouse Button", Input::MouseButton::Code::RightButton);
 		mouseNames.Add("Middle Mouse Button", Input::MouseButton::Code::MiddleButton);
-		mouseNames.Add("NumMouseButtons", Input::MouseButton::Code::NumMouseButtons);
-		mouseNames.Add("InvalidMouseButton", Input::MouseButton::Code::InvalidMouseButton);
 	}
 };
