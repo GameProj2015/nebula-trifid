@@ -73,8 +73,7 @@ NetworkServer::NetworkServer() :
 	fullyConnectedMesh(NULL),
 	readyEvent(NULL),
 	natServer(DEFAULT_SERVER_ADDRESS),
-	connectedToNatPunchThrough(false),
-	lockInGameJoin(false)
+	connectedToNatPunchThrough(false)
 {
 	__ConstructInterfaceSingleton;
 }
@@ -311,7 +310,7 @@ NetworkServer::HandlePacket(RakNet::Packet * packet)
 	break;
 	case ID_FCM2_VERIFIED_JOIN_CAPABLE:
 	{
-		//if you are not in game and lock in game is enabled
+		//If server not full and you're in lobby or allowed to join while game has started
 		if (this->fullyConnectedMesh->GetParticipantCount() + 1 < NetworkGame::Instance()->GetMaxPlayers() && IsInGameJoinUnLocked())
 		{
 			this->fullyConnectedMesh->RespondOnVerifiedJoinCapable(packet, true, 0);
@@ -965,15 +964,7 @@ NetworkServer::StartGame()
 
 //------------------------------------------------------------------------------
 /**
-*/
-void 
-NetworkServer::LockInGameJoin(bool flag)
-{
-	this->lockInGameJoin = flag;
-}
-
-//------------------------------------------------------------------------------
-/**
+Returns a user defined flag when IN_GAME so that the user can decide if it's allowed to join or not.
 */
 bool NetworkServer::IsInGameJoinUnLocked()
 {
