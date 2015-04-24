@@ -572,4 +572,9 @@ int NetworkGame::GetCurrentAmountOfPlayers()
 	return this->players.Size() + 1;
 }
 
+bool NetworkGame::CanJoinInGame()
+{
+	return true;
+}
+
 }
