@@ -19,6 +19,7 @@
 #include "io/xmlreader.h"
 #include "input/keyboard.h"
 #include "input/mouse.h"
+#include "corefeature/managers/keybinding.h"
 
 namespace CoreFeature
 {
@@ -35,6 +36,10 @@ namespace CoreFeature
 		virtual void AddKeyBinding(const Util::String& name, const Input::Key::Code keyCode);
 		//Add one single mouse key binding
 		virtual void AddMouseBinding(const Util::String& name, const Input::MouseButton::Code keyCode);
+		//Updates one single key binding
+		virtual void UpdateKeyBinding(const Util::String& name, const Input::Key::Code keyCode);
+		//Updates one single mouse button binding
+		virtual void UpdateMouseBinding(const Util::String& name, const Input::MouseButton::Code keyCode);
 		//Removes one single key or mouse binding
 		virtual void RemoveBinding(const Util::String& name);
 		//Returns the key code the the desired key binding name
@@ -48,15 +53,22 @@ namespace CoreFeature
 		//Returns true if the key or mouse button with the desired name was released this frame
 		virtual bool IsUp(Util::String name);
 		//Returns all the key bindings
-		virtual Util::Dictionary<Util::String, Input::Key::Code> GetKeyBindings();
-		//Returns all the mouse key bindings
-		virtual Util::Dictionary<Util::String, Input::MouseButton::Code> GetMouseBindings();
+		virtual Util::Array<Ptr<CoreFeature::Keybinding>> GetKeyBindings();
+		//Returns all the possible key binding names
+		virtual Util::Dictionary<Util::String, Input::Key::Code> GetKeyNames();
+		//Returns all the possible mouse key binding names
+		virtual Util::Dictionary<Util::String, Input::MouseButton::Code> GetMouseNames();
+		//Returns all the name of the key
+		virtual Util::String GetNameForKeyCode(Input::Key::Code key);
+		//Returns all the name of the mouse button
+		virtual Util::String GetNameForMouseButtonCode(Input::MouseButton::Code mouseButton);
 		//Deletes all key bindings
 		virtual void ClearBindings();
 	protected:
-		Util::Dictionary<Util::String, Input::Key::Code> keyBindings;
+		Util::Array<Ptr<CoreFeature::Keybinding>> keyBindings;
+		//A list of all possible key inputs
 		Util::Dictionary<Util::String, Input::Key::Code> keyNames;
-		Util::Dictionary<Util::String, Input::MouseButton::Code> mouseBindings;
+		//A list of all possible mouse inputs
 		Util::Dictionary<Util::String, Input::MouseButton::Code> mouseNames;
 		Ptr<Input::Keyboard> keyboard;
 		Ptr<Input::Mouse> mouse;

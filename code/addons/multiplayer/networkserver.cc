@@ -244,6 +244,7 @@ NetworkServer::HandlePacket(RakNet::Packet * packet)
 	break;
 	case ID_DISCONNECTION_NOTIFICATION:
 	{
+		NetworkGame::Instance()->OnPlayerDisconnect(packet->guid);
 		n_printf("Disconnected from %d\n", targetName);
 		if (packet->systemAddress == this->natPunchServerAddress)
 		{
@@ -292,19 +293,34 @@ NetworkServer::HandlePacket(RakNet::Packet * packet)
 	break;
 	case ID_FCM2_VERIFIED_JOIN_FAILED:
 	{
-		n_printf("Failed to join game session");
+		NetworkGame::Instance()->OnJoinFailed("Connection failed");
+	}
+	break;
+	case ID_FCM2_VERIFIED_JOIN_REJECTED:	
+	{
+		RakNet::BitStream bs(packet->data, packet->length, false);
+		Ptr<Multiplayer::BitReader> br = Multiplayer::BitReader::Create();
+		br->SetStream(&bs);
+		br->ReadChar();
+		Util::String answer = br->ReadString();
+
+		n_printf("Failed to join game session: %s", answer.AsCharPtr());
+		NetworkGame::Instance()->OnJoinFailed(answer);
 	}
 	break;
 	case ID_FCM2_VERIFIED_JOIN_CAPABLE:
 	{
-		if (this->fullyConnectedMesh->GetParticipantCount() < NetworkGame::Instance()->GetMaxPlayers())
+		//If server not full and you're in lobby or allowed to join while game has started
+		if (this->fullyConnectedMesh->GetParticipantCount() + 1 < NetworkGame::Instance()->GetMaxPlayers() && IsInGameJoinUnLocked())
 		{
 			this->fullyConnectedMesh->RespondOnVerifiedJoinCapable(packet, true, 0);
 		}
 		else
 		{
-			this->fullyConnectedMesh->RespondOnVerifiedJoinCapable(packet, false, 0);
-		}
+			RakNet::BitStream answer;			
+			answer.Write("Server Full\n");
+			this->fullyConnectedMesh->RespondOnVerifiedJoinCapable(packet, false, &answer);			
+		}		
 	}
 	break;
 	case ID_FCM2_VERIFIED_JOIN_ACCEPTED:
@@ -944,6 +960,22 @@ void
 NetworkServer::StartGame()
 {	
 	this->state = IN_GAME;	
+}
+
+//------------------------------------------------------------------------------
+/**
+Returns a user defined flag when IN_GAME so that the user can decide if it's allowed to join or not.
+*/
+bool NetworkServer::IsInGameJoinUnLocked()
+{
+	if (this->state == IN_GAME)
+	{
+		return NetworkGame::Instance()->CanJoinInGame();
+	}
+	else
+	{
+		return true;
+	}
 }
 
 //------------------------------------------------------------------------------
