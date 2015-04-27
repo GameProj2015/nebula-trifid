@@ -88,6 +88,7 @@ NetworkGame::SerializeConstructionExisting(RakNet::BitStream *constructionBitstr
 	constructionBitstream->Write(this->inLobby);
 	constructionBitstream->Write(this->updateMaster);
 	constructionBitstream->Write(this->masterServerRow);
+	constructionBitstream->Write(this->maxPlayers);
 	Ptr<BitWriter> writer = BitWriter::Create();
 	writer->SetStream(constructionBitstream);
 	this->SerializeConstruction(writer);
@@ -106,6 +107,7 @@ NetworkGame::DeserializeConstructionExisting(RakNet::BitStream *constructionBits
 	constructionBitstream->Read(this->inLobby);
 	constructionBitstream->Read(this->updateMaster);
 	constructionBitstream->Read(this->masterServerRow);
+	constructionBitstream->Read(this->maxPlayers);
 	Ptr<BitReader> reader = BitReader::Create();
 	reader->SetStream(constructionBitstream);
 	this->DeserializeConstruction(reader);	
@@ -327,6 +329,7 @@ NetworkGame::AddPlayer(Ptr<MultiplayerFeature::NetworkPlayer> & player)
 	this->players.Add(player->GetUniqueId().GetRaknetGuid().g, player);
 	SyncPoint::AddToTracking("_READY", player->GetUniqueId());
 	this->OnPlayerJoined(player);
+	n_printf("\nADDING PLAYER");
 }
 
 //------------------------------------------------------------------------------
@@ -378,7 +381,7 @@ NetworkGame::PublishToMaster()
 	gamename.Strip("\r");	
 	req.Format("{'__gameId':'%s','__clientReqId': '0','__timeoutSec': '30','roomName':'%s','guid':'%s','currentPlayers':%d,'maxPlayers':%d %s}", 
 		this->gameID.AsCharPtr(), gamename.AsCharPtr(), NetworkServer::Instance()->GetRakPeerInterface()->GetMyGUID().ToString(),
-		this->currentPlayers, this->maxPlayers, rowStr.AsCharPtr());
+		this->GetCurrentAmountOfPlayers(), this->maxPlayers, rowStr.AsCharPtr());
 	n_printf("%s\n", req.AsCharPtr());
 	Http::HttpStatus::Code res = client->SendRequest(Http::HttpMethod::Post, requri, req, stream.cast<IO::Stream>());
 	if(res == Http::HttpStatus::OK)
@@ -457,6 +460,7 @@ NetworkGame::CreateRoom()
 	__SetSyncEventCallback(MultiplayerFeature::NetworkGame, OnReadyChanged, this, "_READY");
 	__SetSyncEventAllCallback(MultiplayerFeature::NetworkGame, OnAllReady, this, "_READY");
 	SyncPoint::AddToTracking("_READY", MultiplayerFeature::MultiplayerFeatureUnit::Instance()->GetPlayer()->GetUniqueId());
+
 }
 
 //------------------------------------------------------------------------------
@@ -560,4 +564,22 @@ NetworkGame::GetPlayer(const Multiplayer::UniquePlayerId & id)
 	n_assert(this->players.Contains(id.GetRaknetGuid().g));
 	return this->players[id.GetRaknetGuid().g];
 }
+
+//------------------------------------------------------------------------------
+/**
+*/
+int NetworkGame::GetCurrentAmountOfPlayers()
+{
+	//Added 1 for the own client because it's not added to the list which contains other clients
+	return this->players.Size() + 1;
+}
+
+//------------------------------------------------------------------------------
+/**
+*/
+bool NetworkGame::CanJoinInGame()
+{
+	return true;
+}
+
 }

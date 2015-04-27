@@ -92,7 +92,11 @@ public:
 	virtual void OnReceiverMasterList(){}
 	/// called when successfully joined a room
 	virtual void OnJoinedRoom(){}
-	
+	/// called when failed to join a room
+	virtual void OnJoinFailed(const Util::String & reason){ n_printf("\n%s",reason.AsCharPtr());};
+	/// called for already connected clients when another client has disconnected
+	virtual void OnPlayerDisconnect(const RakNet::RakNetGUID& guid){}
+
 	/// we received a message
 	virtual void OnHandleMessage(const Ptr<Messaging::Message> &msg){}
 	/// called when player joins room
@@ -119,8 +123,14 @@ public:
 	/// get max players
 	const ubyte GetMaxPlayers() const;
 
+	/// get the amount of clients connected
+	int GetCurrentAmountOfPlayers();
+
 	/// get a player
 	Ptr<MultiplayerFeature::NetworkPlayer> & GetPlayer(const Multiplayer::UniquePlayerId & id);
+
+	/// whenever joining a room this is called if the game is started
+	virtual bool CanJoinInGame();
 
 protected:
 	/// 
@@ -311,7 +321,9 @@ NetworkGame::GetMaxPlayers() const
 inline void
 NetworkGame::SetMaxPlayers(ubyte val)
 {
+	n_printf("\nset max players to %d",val);
 	this->maxPlayers = val;
+	n_printf("\nmax players is set to %d", maxPlayers);
 }
 
 }// namespace MultiplayerFeature

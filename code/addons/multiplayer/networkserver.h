@@ -59,6 +59,7 @@ public:
     void Open();
     /// close the RakNetServer
     void Close();
+
     /// perform client-side per-frame updates
     void OnFrame();
 
@@ -75,7 +76,9 @@ public:
 	bool HasHost();
 
 private:
-		
+	/// returns status if allowed to join a game
+	bool IsInGameJoinUnLocked();
+
 	class MasterHelperThread : public Threading::Thread
 	{
 		__DeclareClass(MasterHelperThread)			
@@ -104,7 +107,7 @@ private:
 	void UpdateRoomList();
 	/// deal with a packet
 	bool HandlePacket(RakNet::Packet * packet);
-
+	
 
 	/// hmm, lets have this for the time being
 	friend class NetworkGame;
