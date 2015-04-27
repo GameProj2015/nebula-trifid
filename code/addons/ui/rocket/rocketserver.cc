@@ -193,16 +193,16 @@ RocketServer::HandleInput( const Input::InputEvent& event )
 		break;
     case InputEvent::MouseButtonDown:
         this->context->ProcessMouseButtonDown(event.GetMouseButton(), 0);
-        return this->context->GetHoverElement() != this->context->GetRootElement();
+        return this->context->GetHoverElement() != NULL && this->context->GetHoverElement() != this->context->GetRootElement();
     case InputEvent::MouseButtonUp:
         this->context->ProcessMouseButtonUp(event.GetMouseButton(), 0);
         break;    
     case InputEvent::MouseWheelForward:
         this->context->ProcessMouseWheel(-1, 0);
-        return this->context->GetHoverElement() != this->context->GetRootElement();
+        return this->context->GetHoverElement() != NULL && this->context->GetHoverElement() != this->context->GetRootElement();
     case InputEvent::MouseWheelBackward:
         this->context->ProcessMouseWheel(1, 0);
-        return this->context->GetHoverElement() != this->context->GetRootElement();
+        return this->context->GetHoverElement() != NULL && this->context->GetHoverElement() != this->context->GetRootElement();
     }
 
 	// this determines if we are hovering over the UI

@@ -75,10 +75,8 @@ public:
 	/// is the host determined yet
 	bool HasHost();
 
-	/// Allow/Disallow clients to join server while in-game
-	void LockInGameJoin(bool flag);
 private:
-	/// returns status for in game join lock
+	/// returns status if allowed to join a game
 	bool IsInGameJoinUnLocked();
 
 	class MasterHelperThread : public Threading::Thread
@@ -114,7 +112,6 @@ private:
 	/// hmm, lets have this for the time being
 	friend class NetworkGame;
 
-	bool lockInGameJoin;
 	NetworkServerState state;
 	RakNet::RakPeerInterface *rakPeer;	
 	Ptr<MultiplayerFeature::ReplicationManager> replicationManager;
