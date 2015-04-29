@@ -63,7 +63,7 @@ CallbackManager::OnValueChanged(BaseAttributeController* controller)
 		quaternion qrot(rot);
 		
 		matrix44 newMatrix = matrix44::transformation(float4::zerovector(), quaternion::identity(), scale, float4::zerovector(), qrot, position);
-		entity->SetMatrix44(attrId, newMatrix);
+		//entity->SetMatrix44(attrId, newMatrix);
 		Ptr<BaseGameFeature::SetAttribute> msg = BaseGameFeature::SetAttribute::Create();
 		Attribute attr(attrId);
 		attr.SetMatrix44(newMatrix);
