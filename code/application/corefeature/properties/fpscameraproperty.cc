@@ -124,7 +124,7 @@ FPSCameraProperty::OnStart()
 	//setup initial rotation of entity as represented in level editor
 	Ptr<SetTransform> setTransformMsg = SetTransform::Create();
 	setTransformMsg->SetMatrix(this->cameraEntity->GetTransform());
-	//__SendSync(this->entity, setTransformMsg); //needed for no debug mode if you want rotation from level editor to be applied automatically to the entity or when spawning in code with specific transform
+	__SendSync(this->entity, setTransformMsg); //needed for no debug mode if you want rotation from level editor to be applied automatically to the entity or when spawning in code with specific transform
 	//it works in debug mode also but it's a bit off since debug code is wrong
 }
 
