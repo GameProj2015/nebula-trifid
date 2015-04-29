@@ -107,12 +107,8 @@ FPSCameraProperty::OnStart()
 	__SendSync(this->entity, msg);
 	modelEntity = msg->GetEntity();
 
-	
-
 	//Hide this model
-	//TODO: SPANK GUGGE TO FIX THIS!
-	Ptr<GraphicsFeature::SetSkinVisible> msg_hide = GraphicsFeature::SetSkinVisible::Create();
-	msg_hide->SetVisible(false);
+	Ptr<Graphics::HideSkin> msg_hide = Graphics::HideSkin::Create();
 	msg_hide->SetSkin("dummyChar");
 	__SendSync(this->entity, msg_hide);
 
