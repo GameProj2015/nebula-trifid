@@ -43,11 +43,13 @@ FPSCameraProperty::FPSCameraProperty()
 	this->cameraEntity = Graphics::CameraEntity::Create();
 	rotx = 0;
 	fov = 0;
+	jaw = n_deg2rad(- 90); //characters can be created along any axis and does not affect the jaw offset, this offset is mainly needed if joint orientation has to be fixed
 	closeplane = 0;
 	farplane = 0;
 	sensitivity = 0;
 	rotOffset = n_deg2rad(180);
 	debug = false;
+	headIndex = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -98,6 +100,7 @@ FPSCameraProperty::OnStart()
 	farplane = this->entity->GetFloat(Attr::FarPlane);
 	sensitivity = this->entity->GetFloat(Attr::Sensitivity) / 1000; //Because who says 0.003 sensetivity? You say 3.0, hence we devide by 1000 to make it look "nicer"
 	ylimit = n_deg2rad(this->entity->GetFloat(Attr::YLimit) - 0.01f); //Ugly haxxor, ask Nyman and he'll explain :P
+	jaw = n_deg2rad(this->entity->GetFloat(Attr::Jaw)); //Ugly haxxor, ask Nyman and he'll explain :P
 	debug = this->entity->GetBool(Attr::Debug);
 
 	Ptr<GraphicsFeature::GetModelEntity> msg = GraphicsFeature::GetModelEntity::Create();
@@ -106,7 +109,6 @@ FPSCameraProperty::OnStart()
 
 	//Hide this model
 	Ptr<Graphics::HideSkin> msg_hide = Graphics::HideSkin::Create();
-	msg_hide->SetDistribute(false);
 	msg_hide->SetSkin("dummyChar");
 	__SendSync(this->entity, msg_hide);
 
@@ -118,6 +120,12 @@ FPSCameraProperty::OnStart()
 
 	//Locks and hide the cursor
 	InputServer::Instance()->SetCursorLocked(true);
+
+	//setup initial rotation of entity as represented in level editor
+	Ptr<SetTransform> setTransformMsg = SetTransform::Create();
+	setTransformMsg->SetMatrix(this->cameraEntity->GetTransform());
+	//__SendSync(this->entity, setTransformMsg); //needed for no debug mode if you want rotation from level editor to be applied automatically to the entity or when spawning in code with specific transform
+	//it works in debug mode also but it's a bit off since debug code is wrong
 }
 
 //------------------------------------------------------------------------------
@@ -232,7 +240,6 @@ FPSCameraProperty::OnRender()
 	// do just, if we got focus
 	if (FocusManager::Instance()->GetCameraFocusEntity() == this->entity)
 	{
-
 		// update audio
 		this->UpdateAudioListenerPosition();
 
@@ -261,7 +268,7 @@ FPSCameraProperty::UpdateAudioListenerPosition() const
 
 void FPSCameraProperty::OnObtainInputFocus()
 {
-
+	
 }
 
 void FPSCameraProperty::OnLoseInputFocus()
@@ -278,10 +285,9 @@ void FPSCameraProperty::OnBeginFrame()
 		const Ptr<Mouse>& mouse = inputServer->GetDefaultMouse();
 
 		Math::float2 mouseMovement = mouse->GetMovement();
-		Math::float2 screenPos = mouse->GetScreenPosition();
-		Math::matrix44 tt = this->entity->GetMatrix44(Attr::Transform);
 		if(modelEntity->HasCharacter())
 		{
+			
 			Ptr<MoveRotate> rot_msg = MoveRotate::Create();
 			float roty = mouseMovement.x() * sensitivity;
 			rot_msg->SetAngle(roty);
@@ -293,10 +299,14 @@ void FPSCameraProperty::OnBeginFrame()
 				TO BE REMOVED LATER ON
 			*/
 			Math::matrix44 trans = this->entity->GetMatrix44(Attr::Transform);
-			if(!debug)
+			if (headIndex == NULL)
 			{
 				headIndex = modelEntity->GetCharacter()->Skeleton().GetJointIndexByName(head);
+			}
+			if(!debug)
+			{
 				Math::matrix44 headPos = GetJointPos(headIndex);
+				headPos = matrix44::multiply(matrix44::rotationy(jaw), headPos); //needed if using jaw offset
 				trans = matrix44::multiply(headPos, trans);
 			}
 			/*
@@ -304,8 +314,8 @@ void FPSCameraProperty::OnBeginFrame()
 			*/
 			else
 			{
+				//rather bad not accurate method that is somewhat off when character is rotated in the level
 				trans = matrix44::multiply(matrix44::rotationy(rotOffset), trans);
-				headIndex = modelEntity->GetCharacter()->Skeleton().GetJointIndexByName(head);
 				Math::matrix44 headTransform = GetJointPos(headIndex);
 				vector v = headTransform.get_position();
 				trans.set_position(trans.get_position() + v);
@@ -322,10 +332,9 @@ void FPSCameraProperty::OnBeginFrame()
 			{
 				rotx = -ylimit;
 			}
-			this->cameraEntity->SetTransform(Math::matrix44::multiply(Math::matrix44::rotationx(rotx) ,trans));
+			this->cameraEntity->SetTransform(Math::matrix44::multiply(Math::matrix44::rotationx(rotx), trans));
 		}
 	}
-
 }
 
 Math::matrix44 FPSCameraProperty::GetJointPos(IndexT index)
