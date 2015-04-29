@@ -11,6 +11,7 @@
 	<Attribute name="ClosePlane"/>
 	<Attribute name="FarPlane"/>
   <Attribute name="YLimit"/>
+  <Attribute name="Jaw"/>
 	<Attribute name="Sensitivity"/>
   <Attribute name="Debug"/>
   </Property>
