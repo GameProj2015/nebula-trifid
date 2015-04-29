@@ -30,6 +30,8 @@
 #include <Physics2012/Collide/Agent/hkpProcessCollisionInput.h>
 #include <Physics2012/Collide/Filter/Group/hkpGroupFilter.h>
 #include <Physics2012/Collide/Filter/Group/hkpGroupFilterSetup.h>
+#include <Physics2012/Collide/Query/CastUtil/hkpLinearCastInput.h>
+#include <Physics2012/Collide/Query/Collector/PointCollector/hkpSimpleClosestContactCollector.h>
 
 using namespace Physics;
 using namespace Math;
@@ -469,6 +471,52 @@ HavokScene::IsCollisionEnabledBetweenCategories(int categoryA, int categoryB)
 
 	hkpGroupFilter* groupFilter = dynamic_cast<hkpGroupFilter*>(this->filter.val());
 	return groupFilter->isCollisionEnabled(categoryA, categoryB);
+}
+
+//------------------------------------------------------------------------------
+/**
+*/
+bool
+HavokScene::SimpleHullTrace(const Math::float2& oobb, float length, const Math::vector& position, Math::vector& dir, Math::point &rPoint)
+{
+	//Calculate transform from direction
+	Math::vector z_axis = vector::normalize(dir);
+	Math::vector x_axis = vector::normalize(Math::vector::cross3(dir, Math::vector(0.0f, 1.0f, 0.0f)));
+	Math::vector y_axis = vector::normalize(Math::vector::cross3(z_axis, x_axis));
+
+	Math::matrix44 trans = Math::matrix44::identity();
+	trans.set_xaxis(x_axis);
+	trans.set_yaxis(y_axis);
+	trans.set_zaxis(z_axis);
+	trans.set_position(position);
+
+	//Create box from oobb depending on what direction we're shooting
+	//where x and y from oobb is the plane and length the height of the box
+	hkRefPtr<hkpShape> box = n_new(hkpBoxShape(hkVector4(oobb.x(), oobb.y(), length, 0)));
+	hkpCollidable* collidable = n_new(hkpCollidable(box, &NebMatrix442HkTransform(trans)));
+
+	hkVector4 to = Neb2HkFloat4(position + dir*length);
+
+	hkpLinearCastInput linearCastInput;
+	linearCastInput.m_to = to;
+
+	hkArray<hkpWorldRayCastOutput> hits;
+
+	//Cast the ray
+	hkpSimpleClosestContactCollector collector;
+	this->world->linearCast(collidable, linearCastInput, collector);
+
+	if(collector.hasHit())
+	{
+		hkContactPoint hp = collector.getHitContact();
+		hkVector4 p = hp.getPosition();
+		rPoint.set_x(p(0));
+		rPoint.set_y(p(1));
+		rPoint.set_z(p(2));
+		return true;
+	}
+	
+	return false;
 }
 
 }
