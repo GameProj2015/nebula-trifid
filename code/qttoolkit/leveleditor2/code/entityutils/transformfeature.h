@@ -61,13 +61,13 @@ public:
     bool HasValidDrag();
     
     /// Set the matrix of the feature
-	virtual void SetInitialMatrix(Math::matrix44& i_mMatrix);
+	virtual void SetInitialMatrix(Math::matrix44& mat);
     /// Gets the transform the feature has done since initial matrix set.
     virtual Math::matrix44 GetDeltaMatrix();
     
     /// Renders the handles for the user input
     virtual void RenderHandles();
-	Math::vector findorthoforme( Math::vector& i_v );
+	Math::vector FindOrtho( Math::vector& v );
 
 	/// Sets the camera entity
 	void SetCameraEntity(Ptr<Game::Entity> camera);
@@ -83,6 +83,12 @@ protected:
 	/// returns the handle above which the mouse is currently over
 	virtual DragMode GetMouseHandle(const Math::line& worldMouseRay);
 
+	/// decomposes the current transform matrix in translation vector, scale vector and rotation matrix.
+	void DecomposeInitialMatrix();
+
+	Math::vector decomposedTranslation;
+	Math::vector decomposedScale;
+	Math::matrix44 decomposedRotation;
     
 	Ptr<Game::Entity> cameraEntity;
     bool isInDragMode;

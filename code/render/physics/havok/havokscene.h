@@ -54,6 +54,8 @@ public:
 	virtual int GetObjectsInSphere(const Math::vector& pos, float radius, const Physics::FilterSet& excludeSet, Util::Array<Ptr<Physics::PhysicsObject>>& result);
 	/// return all entities within a box 
 	virtual int GetObjectsInBox(const Math::vector& scale, const Math::matrix44& m, const Physics::FilterSet& excludeSet, Util::Array<Ptr<Physics::PhysicsObject>>& result);
+	/// return all entities within a box with a oobb plane in a specified direction and length. The plane must be constructed keeping in mind that the 
+	virtual bool SimpleHullTrace(const Math::float2& oobb, float length, const Math::vector& position, Math::vector& dir, Math::point &rPoint);
 
 	/// Do a ray check starting from position `pos' along ray `dir'.
 	virtual Util::Array<Ptr<Physics::Contact>> RayCheck(const Math::vector& pos, const Math::vector& dir, const Physics::FilterSet& excludeSet, Physics::BaseScene::RayTestType rayType);

@@ -59,7 +59,7 @@ OGL4ShaderBuffer::Setup()
 	n_assert(GLSUCCESS);
 
 	// setup handle
-	this->handle = new AnyFX::EffectVarbuffer::OpenGLBuffer;
+	this->handle = n_new(AnyFX::EffectVarbuffer::OpenGLBuffer);
 	this->handle->size = this->alignedSize;
 	this->handle->handle = this->ogl4Buffer;
 	this->handle->bindRange = true;
@@ -86,6 +86,7 @@ OGL4ShaderBuffer::Discard()
 void
 OGL4ShaderBuffer::UpdateBuffer(void* data, SizeT offset, SizeT length)
 {
+	n_assert(length <= this->size);
 	ShaderBufferBase::UpdateBuffer(data, offset, length);
 	
  	this->bufferIndex = (this->bufferIndex + 1) % NumBuffers;
@@ -101,6 +102,5 @@ OGL4ShaderBuffer::UpdateBuffer(void* data, SizeT offset, SizeT length)
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 #endif
 }
-
 
 } // namespace OpenGL4
