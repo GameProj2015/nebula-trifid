@@ -69,6 +69,8 @@ protected:
     void ClearEntities();
     /// create static collision
     virtual void CreateCollisionShape();
+	/// creates a collision shape with scale
+	virtual void CreateScaledCollisionShape();
     /// destroy static collision
     virtual void DestroyCollisionShape();
 
