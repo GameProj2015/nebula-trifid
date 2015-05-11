@@ -145,7 +145,7 @@ TriggerProperty::HandleMessage(const Ptr<Messaging::Message>& msg)
         this->triggerScale = scaleMsg->GetScale();
         // destroy collision shape and recreate it with new scale
         this->DestroyCollisionShape();
-        this->CreateCollisionShape();
+		this->CreateScaledCollisionShape();
     }
     else if (msg->CheckId(BaseGameFeature::SetTransform::Id))
     {
@@ -516,6 +516,32 @@ TriggerProperty::CreateCollisionShape()
 	this->probeObject = Physics::PhysicsProbe::Create();
 
 	this->probeObject->Init(coll,m);
+	Physics::PhysicsServer::Instance()->GetScene()->Attach(this->probeObject.cast<Physics::PhysicsObject>());
+	this->probeObject->SetUserData(this->entity.cast<Core::RefCounted>());
+}
+
+//------------------------------------------------------------------------------
+/**
+*/
+void
+TriggerProperty::CreateScaledCollisionShape()
+{
+	n_assert(!this->probeObject.isvalid());
+	const matrix44& m = GetEntity()->GetMatrix44(Attr::Transform);
+	Ptr<Physics::Collider> coll = Physics::Collider::Create();
+
+	if (this->shape == "sphere")
+	{
+		coll->AddSphere((this->triggerScale*0.5).length3(), Math::matrix44::identity());
+	}
+	else
+	{
+		coll->AddBox(this->triggerScale * 0.5, Math::matrix44::identity());
+	}
+
+	this->probeObject = Physics::PhysicsProbe::Create();
+
+	this->probeObject->Init(coll, m);
 	Physics::PhysicsServer::Instance()->GetScene()->Attach(this->probeObject.cast<Physics::PhysicsObject>());
 	this->probeObject->SetUserData(this->entity.cast<Core::RefCounted>());
 }
