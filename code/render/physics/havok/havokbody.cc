@@ -14,6 +14,8 @@
 #include <Physics2012/Collide/Shape/Compound/Collection/List/hkpListShape.h>
 #include <Physics2012/Utilities/Dynamics/Inertia/hkpInertiaTensorComputer.h>
 
+#define SCALE_EPSILON 0.001f
+
 namespace Havok
 {
 using namespace Physics;
@@ -67,8 +69,9 @@ HavokBody::SetupFromTemplate(const PhysicsCommon& templ)
 
 	Math::vector scale;
 	templ.startTransform.get_scale(scale);
-
-	if(scale.x() != 1 || scale.y() != 1 || scale.z() != 1)
+	
+	const Math::vector one(1.0f);
+	if(! Math::float4::nearequal3(one, scale, SCALE_EPSILON))
 	{
 		// need scaled collider. check if supported by shape
 		n_assert2(templ.collider->GetDescriptions().Size() == 1, "only singular box shapes support scale");
