@@ -106,7 +106,7 @@ AttachmentManager::Attach(const Ptr<Graphics::ModelEntity>& baseEntity, const Ut
 	attach.rotation = rotation;
 	attach.joint = joint;
 	attach.jointIndex = -1;
-	if (baseEntity->GetModelResourceState() != Resources::Resource::Loaded)
+	if (!baseEntity->IsValid())
 	{
 		this->delayedAttachments.Append(attach);
 	}
@@ -150,7 +150,7 @@ AttachmentManager::Attach(const Ptr<Graphics::ModelEntity>& baseEntity, const Ut
 	attach.rotation = rotation;
 	attach.joint = joint;
 	attach.jointIndex = -1; 
-	if (baseEntity->GetModelResourceState() != Resources::Resource::Loaded)
+	if (!baseEntity->IsValid())
 	{
 		this->delayedAttachments.Append(attach);
 	}

@@ -73,8 +73,12 @@ public:
 	bool IsHost() const;
 
 	/// is the host determined yet
-	bool HasHost();
+	bool HasHost();	
 
+	/// internal
+	void DispatchMessageStream(RakNet::BitStream * msgStream, RakNet::Packet *packet);
+	/// internal
+	void SendMessageStream(RakNet::BitStream* msgStream);
 private:
 	/// returns status if allowed to join a game
 	bool IsInGameJoinUnLocked();
@@ -108,6 +112,9 @@ private:
 	/// deal with a packet
 	bool HandlePacket(RakNet::Packet * packet);
 	
+
+	/// get replica via network id
+ 	RakNet::Replica3 * LookupReplica(RakNet::NetworkID replicaId);
 
 	/// hmm, lets have this for the time being
 	friend class NetworkGame;
