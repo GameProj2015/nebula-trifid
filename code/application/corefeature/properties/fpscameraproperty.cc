@@ -110,6 +110,7 @@ FPSCameraProperty::OnStart()
 	//Hide this model
 	Ptr<Graphics::HideSkin> msg_hide = Graphics::HideSkin::Create();
 	msg_hide->SetSkin("dummyChar");
+	msg_hide->SetDistribute(false);
 	__SendSync(this->entity, msg_hide);
 
 	//Camera settings
@@ -278,8 +279,8 @@ void FPSCameraProperty::OnLoseInputFocus()
 
 void FPSCameraProperty::OnBeginFrame()
 {
-	// only do something if we have the input focus
-	if (FocusManager::Instance()->GetInputFocusEntity() == this->entity)
+	// only do something if we have the input focus && camera focus
+	if (FocusManager::Instance()->GetInputFocusEntity() == this->entity && FocusManager::Instance()->GetCameraFocusEntity() == this->entity)
 	{
 		InputServer* inputServer = InputServer::Instance();
 		const Ptr<Mouse>& mouse = inputServer->GetDefaultMouse();
