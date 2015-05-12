@@ -96,14 +96,9 @@ NFbxMeshNode::Setup( FbxNode* node, const Ptr<NFbxScene>& scene )
 	}
 
 	// get lod group
-	if (this->fbxNode->GetParent())
+	if (this->fbxNode->GetParent() != NULL)
 	{
 		this->lod = this->fbxNode->GetParent()->GetLodGroup();
-		if (this->lod != NULL)
-		{
-			int numThresholds = this->lod->GetNumThresholds();
-			int displayLevels = this->lod->GetNumDisplayLevels();
-		}
 	}
 
 	// set mask
@@ -1030,6 +1025,14 @@ NFbxMeshNode::DoMerge( Util::Dictionary<Util::String, Util::Array<Ptr<NFbxMeshNo
 		this->skinFragments.Clear();
 	}
 
+	// make sure lods doesn't get merged
+	if (this->lod != NULL)
+	{
+		String lodMaterial;
+		lodMaterial.Format("_lod_%d_%d", this->lodIndex, this->name.HashCode());
+		this->material.Append(lodMaterial);
+	}
+
 	// add this mesh to mesh dictionary, create entry if non-existent
 	if (meshes.Contains(this->material))
 	{
@@ -1051,24 +1054,22 @@ NFbxMeshNode::DoMerge( Util::Dictionary<Util::String, Util::Array<Ptr<NFbxMeshNo
 const float 
 NFbxMeshNode::GetLODMaxDistance() const
 {
+	n_assert(this->lod != NULL);
 	FbxDistance dist;
-	int index = this->lodIndex;
-	bool hasMax = false;
+	int index = n_max(this->lodIndex, -1);
 	if (index >= 0)
 	{
-		hasMax = this->lod->GetThreshold(index, dist);
+		bool hasMax = this->lod->GetThreshold(index, dist);
+
+		float scale = this->scene->GetScale();
+		if (hasMax)
+		{
+			return dist.value() * scale;
+		}
 	}
 
-	float scale = this->scene->GetScale();
-	if (hasMax)
-	{
-		return dist.value() * scale;
-	}
-	else
-	{
-		// if this is our last node, set the max value to float max
-		return FLT_MAX;
-	}
+	// fallback in case we don't have an interval
+	return FLT_MAX;
 }
 
 //------------------------------------------------------------------------------
@@ -1077,24 +1078,22 @@ NFbxMeshNode::GetLODMaxDistance() const
 const float 
 NFbxMeshNode::GetLODMinDistance() const
 {
+	n_assert(this->lod != NULL);
 	FbxDistance dist;
-	int index = this->lodIndex - 1;
-	bool hasMin = false;
+	int index = n_max(this->lodIndex - 1, -1);
 	if (index >= 0)
 	{
-		hasMin = this->lod->GetThreshold(index, dist);
+		bool hasMin = this->lod->GetThreshold(index, dist);
+
+		float scale = this->scene->GetScale();
+		if (hasMin)
+		{
+			return dist.value() * scale;
+		}
 	}
 
-	float scale = this->scene->GetScale();
-	if (hasMin)
-	{
-		return dist.value() * scale;
-	}
-	else
-	{
-		// if we have no min-value, the smallest value must be 0...
-		return 0.0f;
-	}
+	// if we have no min-value, the smallest value must be 0...
+	return 0.0f;
 }
 
 } // namespace ToolkitUtil
