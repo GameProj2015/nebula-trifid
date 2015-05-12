@@ -723,14 +723,7 @@ EditorBlueprintManager::SaveCategoryTemplates(const Util::String & category)
 		}
 		xmlWriter->EndNode();
 		xmlWriter->Close();
-	}	
-	ToolkitUtil::Logger logger;
-	Ptr<ToolkitUtil::TemplateExporter> exporter = ToolkitUtil::TemplateExporter::Create();
-	exporter->SetLogger(&logger);
-	exporter->SetDbFactory(Db::DbFactory::Instance());
-	exporter->Open();
-	exporter->ExportFile(IO::URI(filename));
-	exporter->Close();
+	}		
 }
 
 //------------------------------------------------------------------------------
