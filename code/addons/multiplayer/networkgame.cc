@@ -590,5 +590,13 @@ bool NetworkGame::CanJoinInGame()
 {
 	return true;
 }
-
+//------------------------------------------------------------------------------
+/**
+*/
+Ptr<MultiplayerFeature::NetworkPlayer> &
+NetworkGame::GetPlayerByIndex(IndexT idx)
+{
+	n_assert(idx < this->players.Size());
+	return this->players.ValueAtIndex(idx);
+}
 }
