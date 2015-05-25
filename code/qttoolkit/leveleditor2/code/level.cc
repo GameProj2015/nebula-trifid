@@ -488,7 +488,7 @@ Level::SaveLevel()
 		String gfx = envEntities[i]->GetString(Attr::Graphics);
 		this->WriteString(xmlWriter,"_ID", this->AllocateID("environment","",gfx.ExtractFileName()));		
 		this->WriteString(xmlWriter,"Id",envEntities[i]->GetString(Attr::Id));		
-		this->WriteString(xmlWriter, "_Level", this->name.AsCharPtr());
+		this->WriteString(xmlWriter, "_Level", this->name.AsCharPtr()); 
 		this->WriteString(xmlWriter, "_Layers", envEntities[i]->GetString(Attr::_Layers));
 		this->WriteString(xmlWriter,"Guid",envEntities[i]->GetGuid(Attr::EntityGuid).AsString());				
 		this->WriteString(xmlWriter,"ParentGuid",envEntities[i]->GetGuid(Attr::ParentGuid).AsString());		
@@ -499,6 +499,8 @@ Level::SaveLevel()
 		this->WriteString(xmlWriter,"DynamicObject",Util::String::FromBool(envEntities[i]->GetBool(Attr::DynamicObject)));
 		this->WriteString(xmlWriter,"VelocityVector",Util::String::FromFloat4(envEntities[i]->GetFloat4(Attr::VelocityVector)));
 		this->WriteString(xmlWriter,"Instanced",Util::String::FromBool(envEntities[i]->GetBool(Attr::Instanced)));
+		this->WriteString(xmlWriter,"PhysicMaterial", envEntities[i]->GetString(Attr::PhysicMaterial));
+		this->WriteString(xmlWriter,"CastShadows", Util::String::FromBool(envEntities[i]->GetBool(Attr::CastShadows)));
 		xmlWriter->EndNode();
 		xmlWriter->EndNode();					
 

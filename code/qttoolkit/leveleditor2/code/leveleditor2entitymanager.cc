@@ -189,7 +189,9 @@ LevelEditor2EntityManager::CreateEnvironmentEntity(const Util::String& _template
 	attributes.Append(Attribute(Attr::DynamicObject,false));
 	attributes.Append(Attribute(Attr::VelocityVector,Math::float4(0, 0, 0, 0)));
 	attributes.Append(Attribute(Attr::EntityCategory,"_Environment"));
-
+	//Nyman added
+	attributes.Append(Attribute(Attr::PhysicMaterial, ""));
+	attributes.Append(Attribute(Attr::CastShadows, true));
 
 	Ptr<Game::Entity> newEnt =  CreateEntityByAttrs(attributes);	
 	return newEnt->GetGuid(Attr::EntityGuid);	
@@ -331,6 +333,15 @@ LevelEditor2EntityManager::CreateEntityFromAttrContainer(const Util::String & ca
 		if(!attrs.HasAttr(Attr::DynamicObject))
 		{
 			at.Append(Attribute(Attr::DynamicObject,false));
+		}
+		//Nyman added
+		if(!attrs.HasAttr(Attr::PhysicMaterial))
+		{
+			at.Append(Attribute(Attr::PhysicMaterial, ""));
+		}
+		if(!attrs.HasAttr(Attr::CastShadows))
+		{
+			at.Append(Attribute(Attr::CastShadows, true));
 		}
 		newEnt = CreateEntityByAttrs(at,"EditorEntity", attrs.GetGuid(Attr::Guid).AsString());		
 		newEnt->SetString(Attr::EntityLevel,Level::Instance()->GetName());		

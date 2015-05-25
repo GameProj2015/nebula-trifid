@@ -33,7 +33,7 @@ public:
     /// called from Entity::DeactivateProperties()
     virtual void OnDeactivate();
     /// add a graphics entity group 
-    void AddGraphicsEntities(const Util::String& id, const Math::matrix44& worldMatrix, const Util::Array<Ptr<Graphics::ModelEntity> >& gfxEntities);
+    void AddGraphicsEntities(const Util::String& id, const Math::matrix44& worldMatrix, const Util::Array<Ptr<Graphics::ModelEntity> >& gfxEntities, bool castShadows);
     /// delete graphics entity group
     void DeleteGraphicsEntities(const Util::String& id);
     /// return true if a graphics entity group exists by id

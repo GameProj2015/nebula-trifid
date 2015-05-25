@@ -59,7 +59,7 @@ EnvironmentGraphicsProperty::OnDeactivate()
 /**
 */
 void
-EnvironmentGraphicsProperty::AddGraphicsEntities(const String& id, const matrix44& worldMatrix, const Array<Ptr<Graphics::ModelEntity> >& gfxEntities)
+EnvironmentGraphicsProperty::AddGraphicsEntities(const String& id, const matrix44& worldMatrix, const Array<Ptr<Graphics::ModelEntity> >& gfxEntities, bool castShadows)
 {
     n_assert(id.IsValid());
 
@@ -85,6 +85,7 @@ EnvironmentGraphicsProperty::AddGraphicsEntities(const String& id, const matrix4
     IndexT entityIndex;
     for (entityIndex = 0; entityIndex < gfxEntities.Size(); entityIndex++)
     {
+		gfxEntities[entityIndex]->SetCastsShadows(castShadows);
         stage->AttachEntity(gfxEntities[entityIndex].upcast<Graphics::GraphicsEntity>());
     }
 }
