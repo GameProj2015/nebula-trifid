@@ -14,6 +14,7 @@
 #include "io/filestream.h"
 #include "resources/resource.h"
 #include "physics/resource/managedphysicsmodel.h"
+#include "physics/materialtable.h"
 
 
 namespace PhysicsFeature
@@ -79,6 +80,26 @@ EnvironmentCollideProperty::AddShapes(const Util::String& id, const Math::matrix
 	}
 	this->entries.Add(id,objects);
 
+}
+
+//------------------------------------------------------------------------------
+/**
+*/
+void 
+EnvironmentCollideProperty::AddShapes(const Util::String& id, const Math::matrix44& worldMatrix, const Util::String & resourceName, const Util::String & material)
+{
+	Util::String path;
+	path.Format("physics:%s.np3",resourceName.AsCharPtr());
+	Ptr<ManagedPhysicsModel> model = Resources::ResourceManager::Instance()->CreateManagedResource(PhysicsModel::RTTI,path).cast<ManagedPhysicsModel>();
+	Util::Array<Ptr<PhysicsObject>> objects = model->GetModel()->CreateStaticInstance(worldMatrix);	
+	IndexT i;
+	for (i = 0; i < objects.Size(); i++)
+	{
+		PhysicsServer::Instance()->GetScene()->Attach(objects[i]);
+		objects[i]->SetUserData(this->entity.cast<Core::RefCounted>());
+		objects[i]->SetMaterialType(Physics::MaterialTable::StringToMaterialType(material));
+	}
+	this->entries.Add(id,objects);
 }
 
 //------------------------------------------------------------------------------

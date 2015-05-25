@@ -40,6 +40,8 @@ public:
     virtual void OnDeactivate();
 	/// add from resource file
 	void AddShapes(const Util::String& id, const Math::matrix44& worldMatrix, const Util::String & res);
+	/// add from resource file with physics material
+	void AddShapes(const Util::String& id, const Math::matrix44& worldMatrix, const Util::String & res, const Util::String & material);
     /// delete shapes associated with given id
     void DeleteShapes(const Util::String& id);
     /// return true if a shape group of the given id exists
