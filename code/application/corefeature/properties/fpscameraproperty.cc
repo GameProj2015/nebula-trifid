@@ -107,6 +107,12 @@ FPSCameraProperty::OnStart()
 	__SendSync(this->entity, msg);
 	modelEntity = msg->GetEntity();
 
+	//Hide this model
+	Ptr<Graphics::HideSkin> msg_hide = Graphics::HideSkin::Create();
+	msg_hide->SetSkin("Character_rig_Male:Character");
+	msg_hide->SetDistribute(false);
+	__SendSync(this->entity, msg_hide);
+
 	//Camera settings
 	Graphics::CameraSettings settings = this->cameraEntity->GetCameraSettings();
 	float aspect = settings.GetAspect();

@@ -503,7 +503,7 @@ NetworkEntity::OnActivate()
 void
 NetworkEntity::OnDeactivate()
 {
-	if (this->IsCreator())
+	if (this->deletingSystemGUID == UNASSIGNED_RAKNET_GUID)	
 	{
 		this->BroadcastDestruction();
 	}	
