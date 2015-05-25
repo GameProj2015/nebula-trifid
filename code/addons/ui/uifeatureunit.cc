@@ -375,4 +375,14 @@ UiFeatureUnit::SetLayoutVisible(const Util::String & layoutid, bool visible)
 	}
 	
 }
+
+void UiFeatureUnit::SetHandleInput(bool handleInput)
+{
+	inputHandler->SetHandleInput(handleInput);
+}
+
+bool UiFeatureUnit::GetHandleInput()
+{
+	return inputHandler->GetHandleInput();
+}
 }; // namespace UI
