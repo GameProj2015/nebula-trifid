@@ -109,7 +109,7 @@ FPSCameraProperty::OnStart()
 
 	//Hide this model
 	Ptr<Graphics::HideSkin> msg_hide = Graphics::HideSkin::Create();
-	msg_hide->SetSkin("dummyChar");
+	msg_hide->SetSkin("Character_rig_Male:Character");
 	msg_hide->SetDistribute(false);
 	__SendSync(this->entity, msg_hide);
 
