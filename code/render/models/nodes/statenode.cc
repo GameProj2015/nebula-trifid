@@ -311,9 +311,7 @@ StateNode::GetManagedTextureVariable(const Util::StringAtom& varName) const
 Resources::Resource::State
 StateNode::GetResourceState() const
 {
-	Resources::Resource::State loadedState = TransformNode::GetResourceState();
-	if (loadedState > this->stateLoaded) loadedState = this->stateLoaded;
-	return loadedState;
+	return TransformNode::GetResourceState();
 }
 
 //------------------------------------------------------------------------------
