@@ -128,6 +128,8 @@ public:
 
 	/// get a player
 	Ptr<MultiplayerFeature::NetworkPlayer> & GetPlayer(const Multiplayer::UniquePlayerId & id);
+	/// get a player by index
+	Ptr<MultiplayerFeature::NetworkPlayer> & GetPlayerByIndex(IndexT idx);
 
 	/// whenever joining a room this is called if the game is started
 	virtual bool CanJoinInGame();
