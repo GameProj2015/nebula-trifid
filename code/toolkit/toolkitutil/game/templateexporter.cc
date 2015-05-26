@@ -407,6 +407,7 @@ TemplateExporter::CollectFromBlueprints(const Ptr<IO::XmlReader>& reader)
 	gameTable = TemplateExporter::CreateTable(this->gameDb, "_Instance__Environment");
 	TemplateExporter::CreateColumn(gameTable, Column::Primary, AttrId("_ID"));
 	TemplateExporter::CreateColumn(gameTable, Column::Default, AttrId("_Level"));
+	TemplateExporter::CreateColumn(gameTable, Column::Default, AttrId("PhysicMaterial"));
 	
 	this->gameDb->AddTable(gameTable);
 	gameTable->CommitChanges();

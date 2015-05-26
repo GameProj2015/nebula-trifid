@@ -155,6 +155,20 @@ EnvEntityManager::CreateEnvEntity(const Ptr<Db::ValueTable>& instTable, IndexT i
 			dynamic = true;
 		}
 	}
+	bool material = false;
+	if (instTable->HasColumn(Attr::PhysicMaterial))
+	{
+		//If this isnt blank we want to add a physics material
+		if((instTable->GetString(Attr::PhysicMaterial, instTableRowIndex) != ""))
+		{
+			material = true;
+		}
+	}
+	bool castShadows = true;
+	if(instTable->HasColumn(Attr::CastShadows))
+	{
+		castShadows = instTable->GetBool(Attr::CastShadows, instTableRowIndex);
+	}
 	if (collide)
     {
 		if(dynamic)
@@ -164,10 +178,16 @@ EnvEntityManager::CreateEnvEntity(const Ptr<Db::ValueTable>& instTable, IndexT i
 		}
 		else
 		{
-			// this will just add all shapes to the physics level		
-			this->envCollideProperty->AddShapes(id, worldMatrix, resName);
+			// this will just add all shapes to the physics level	
+			if(material)
+			{
+				this->envCollideProperty->AddShapes(id, worldMatrix, resName, instTable->GetString(Attr::PhysicMaterial, instTableRowIndex));
+			}
+			else
+			{
+				this->envCollideProperty->AddShapes(id, worldMatrix, resName);
+			}
 		}
-		
 	} 
 	bool instanced = false;
 	if (instTable->HasColumn(Attr::Instanced))
@@ -191,14 +211,14 @@ EnvEntityManager::CreateEnvEntity(const Ptr<Db::ValueTable>& instTable, IndexT i
 			billboard->SetTexture(fullResourceName);
 			Util::Array<Ptr<Graphics::ModelEntity>> ent;
 			ent.Append(billboard.cast<Graphics::ModelEntity>());
-			this->envGraphicsProperty->AddGraphicsEntities(id,worldMatrix,ent);
+			this->envGraphicsProperty->AddGraphicsEntities(id,worldMatrix,ent, castShadows);
 			
 		}
 		else
 		{
 			// create graphics entity(s) and attach to graphics property 
 			Util::Array<Ptr<Graphics::ModelEntity> > gfxEntities = segGfxUtil.CreateAndSetupGraphicsEntities(resName, worldMatrix, envEntity->GetUniqueId(),NULL,instanced);
-			this->envGraphicsProperty->AddGraphicsEntities(id, worldMatrix, gfxEntities);
+			this->envGraphicsProperty->AddGraphicsEntities(id, worldMatrix, gfxEntities, castShadows);
 		}
     }
 }
