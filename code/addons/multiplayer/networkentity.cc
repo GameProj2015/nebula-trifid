@@ -381,6 +381,10 @@ NetworkEntity::Serialize(RakNet::SerializeParameters *serializeParameters)
 void
 NetworkEntity::Deserialize(RakNet::DeserializeParameters *deserializeParameters)
 {
+	if (!this->IsActive())
+	{
+		return;
+	}
 	Ptr<BitReader> reader = BitReader::Create();
 	reader->SetStream(&deserializeParameters->serializationBitstream[0]);
 	bool hasTransform = false;
@@ -503,7 +507,7 @@ NetworkEntity::OnActivate()
 void
 NetworkEntity::OnDeactivate()
 {
-	if (this->deletingSystemGUID == UNASSIGNED_RAKNET_GUID)	
+	if (this->IsCreator())
 	{
 		this->BroadcastDestruction();
 	}	
