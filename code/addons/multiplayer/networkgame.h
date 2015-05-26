@@ -76,6 +76,8 @@ public:
 	void JoinRoom(const Util::String & guid);
 	/// create lobby and publish to master server (if enabled)
 	void CreateRoom();
+	/// unpublishes and resets network
+	void CancelRoom();
 	/// get master server list
 	const Ptr<Attr::AttributeTable>& GetMasterList() const;
 	/// post to master server
@@ -184,9 +186,9 @@ private:
 	friend class NetworkPlayer;
 
 	/// add player instance to current game
-	void AddPlayer(Ptr<MultiplayerFeature::NetworkPlayer> & player);
+	void AddPlayer(const Ptr<MultiplayerFeature::NetworkPlayer> & player);
 	/// remove player
-	void RemovePlayer(Ptr<MultiplayerFeature::NetworkPlayer> & player);
+	void RemovePlayer(const Ptr<MultiplayerFeature::NetworkPlayer> & player);
 
 	/// deal with a packet
 	bool HandlePacket(RakNet::Packet * packet);	
@@ -213,7 +215,8 @@ private:
 
 	/// these are local
 	bool creator;
-	Timing::Time nextMasterServerUpdate;	
+	bool delayedMaster;
+	RakNet::Time nextMasterServerUpdate;	
 	Util::Dictionary<uint64_t, Ptr<MultiplayerFeature::NetworkPlayer>> players;
 	Ptr<Attr::AttributeTable> serverList;
 	Util::String gameID;
