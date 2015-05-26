@@ -27,7 +27,7 @@ unsigned InternalEffectVariable::globalTextureCounter = 0;
 InternalEffectVariable::InternalEffectVariable() :
 	byteSize(0),
 	byteOffset(0),
-	currentValue(0),
+	currentValue(NULL),
 	active(false),
 	isInVarblock(false),
 	isDirty(false),
