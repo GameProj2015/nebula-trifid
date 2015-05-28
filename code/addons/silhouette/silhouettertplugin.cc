@@ -98,6 +98,10 @@ SilhouetteRTPlugin::OnRenderFrameBatch(const Ptr<Frame::FrameBatch>& frameBatch)
 				const Ptr<Graphics::ModelEntity>& model = models[modelIndex];
 				if (model->IsValid())
 				{
+					if (model->GetModelInstance() == NULL)
+					{
+						return;
+					}
 					const Util::Array<Ptr<ModelNode>>& nodes = model->GetModelInstance()->GetModel()->GetNodes();
 					const Util::Array<Ptr<ModelNodeInstance>>& nodeInstances = model->GetModelInstance()->GetNodeInstances();
 
