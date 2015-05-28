@@ -105,10 +105,10 @@ LoaderServer::CreateUserProfile() const
     @return             success
 */
 bool
-LoaderServer::LoadLevel(const Util::String& levelName)
+LoaderServer::LoadLevel(const Util::String& levelName, const Util::Array<Util::String>& activeLayers)
 {
     n_assert(levelName.IsValid());
-    bool success = LevelLoader::Load(levelName);
+	bool success = LevelLoader::Load(levelName, activeLayers);
     return success;
 }
 
@@ -192,4 +192,11 @@ LoaderServer::GetScreenshotFilepath(const Util::String& extension)
     uri.AppendLocalPath(fileName + Util::String::FromInt(screenshotNumber) + "." + extension);
     return uri;
 }
+
+Util::Array<Util::String> LoaderServer::GetLayersFromMap(const Util::String& levelName)
+{
+	n_assert(levelName.IsValid());
+	return LevelLoader::GetLayers(levelName);
+}
+
 } // namespace BaseGameFeature

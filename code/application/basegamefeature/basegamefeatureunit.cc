@@ -516,7 +516,7 @@ BaseGameFeatureUnit::SetupWorldFromCurrentLevel()
 		PostEffect::PostEffectFeatureUnit::Instance()->SetupDefaultWorld();
 	}
     // load level from database
-    BaseGameFeature::LoaderServer::Instance()->LoadLevel(this->GetCurrentLevel());
+    BaseGameFeature::LoaderServer::Instance()->LoadLevel(this->GetCurrentLevel(), this->activeLayers);
 
     // invoke OnLoad() on everything
     Game::GameServer::Instance()->NotifyGameLoad();
@@ -611,6 +611,17 @@ BaseGameFeatureUnit::HandleInput()
 //------------------------------------------------------------------------------
 /**
 */
+
+Util::Array<Util::String> BaseGameFeatureUnit::GetLayersFromMap(const Util::String& levelname)
+{
+	return LoaderServer::Instance()->GetLayersFromMap(levelname);
+}
+
+void BaseGameFeatureUnit::SetActivateLayers(const Util::Array<Util::String>& layers)
+{
+	activeLayers = layers;
+}
+
 void
 BaseGameFeatureUnit::OnFrame()
 {    

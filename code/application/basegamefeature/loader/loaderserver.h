@@ -51,7 +51,7 @@ public:
     const Ptr<UserProfile>& GetUserProfile() const;
     
     /// load a new level, this method is usually called by Game::SetupManager
-    virtual bool LoadLevel(const Util::String& levelName);
+	virtual bool LoadLevel(const Util::String& levelName, const Util::Array<Util::String>& activeLayers);
 
     /// attach loader
     void AttachEntityLoader(const Ptr<EntityLoaderBase>& loader);
@@ -84,7 +84,8 @@ public:
     void CloseProgressIndicator();
     /// get filename for next screenshot
     IO::URI GetScreenshotFilepath(const Util::String& extension);
-    
+	/// get all layers from map
+	Util::Array<Util::String> GetLayersFromMap(const Util::String& levelName);
 private:
     friend class LevelLoader;
 

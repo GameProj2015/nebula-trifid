@@ -98,6 +98,10 @@ public:
     virtual void SetupWorldFromCurrentLevel();
     /// cleanup the game world
     virtual void CleanupWorld();
+	/// get all layers from map
+	Util::Array<Util::String> GetLayersFromMap(const Util::String& levelname);
+	//Activate layers //Must be called before OnStateEnter
+	void SetActivateLayers(const Util::Array<Util::String>& layers);
 
     /// set factory manager rtti
     void SetFactoryManager(const Ptr<FactoryManager>& manager);
@@ -121,7 +125,7 @@ protected:
 	Ptr<Navigation::CrowdManager> crowdManager;
     Ptr<EnvQueryManager> envQueryManager;
 	Ptr<AudioManager> audioManager;
-
+	Util::Array<Util::String> activeLayers;
 #if __NEBULA3_HTTP__
     Ptr<Http::HttpRequestHandler> debugRequestHandler;
 #endif
